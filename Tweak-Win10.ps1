@@ -2,9 +2,11 @@
 [cmdletbinding(DefaultParametersetName="Preset")]
 param(
 [ValidateSet("Host","Log","Pipe")]$RedirectOutput = "Pipe",
-[Parameter(ParameterSetName='Preset')]$PresetFile,
-[Parameter(ParameterSetName='Input')][string[]]$Tweaks,
-[Parameter(ParameterSetName='Select')][switch]$ShowTweaks,
+[Parameter(ParameterSetName='Preset')]
+[ValidateScript({ Test-Path -Path $_ -PathType Leaf })]$PresetFile,
+[Parameter(ParameterSetName='Preset')]$Delimiter = ",",
+[Parameter(ParameterSetName='Select')][switch]$SelectTweaks,
+#[Parameter(ParameterSetName='Select')][switch]$ExportTweaks,
 [switch]$WaitForKey,
 [switch]$RestartComputer
 )
@@ -12,35 +14,52 @@ param(
 .SYNOPSIS
     .
 .DESCRIPTION
-    .
+    Apply various Windows 10 / 2016 settings
 .PARAMETER PresetFile
     The file with tweaks to apply
-	Create CSV file with Name of Function in first column and option(s) in 2nd column
-.PARAMETER PresetFile
-	array of tweaks parsed inline as parameter
+	Create comma delimited file with name of Tweak to apply followed by parameter and parameter option
+	for example: "Set-TweakName","Status","Disabled"
+.PARAMETER SelectTweaks
+	showing gridview to select tweak(s) to apply
+	a prompt for parameter option will be shown per tweak as they are mandatory
 .PARAMETER RedirectOutput
     Different output options:
 		Host writes output (immediately) to host
 		Log saves output to log file in temp folder
-		Pipe returns all output at end of script to the pipeline
+		Pipe returns output at end of script to the pipeline
+.PARAMETER WaitForKey
+	script will pause until (any) key is entered in console
+.PARAMETER RestartComputer
+	some tweaks need a restart of the computer / shell to be applied
 .EXAMPLE
-    C:\PS>
-    <Description of example>
+    PS>
 .NOTES
     Author: Chris Kenis
-    Date:   13 december 2017
+    Date:   19 may 2018
+	Version: 5.0
+	Most tweaks need Admin rights to run successfully
+.LINK
+	https://github.com/chriskenis/Win10-TweakCollection
 #>
-# Win10 / WinServer2016 Initial Setup Script
-# Version: v3.0, 2017-12-13
-# Source: https://github.com/ChrisKenis/POSH
 
 process{
+# Load Tweak names from selection grid or a preset file
+switch ($PsCmdlet.ParameterSetName){
+	"Preset" { $Tweaks = Test-Tweak -Tweaks $( Import-Csv -Path $PresetFile -Delimiter $Delimiter -Header $TweakHdr ) }
+	"Select" { $Tweaks = $Tweaks | Out-GridView -Title "Select Tweaks to apply" -PassThru }
+	}
 foreach ($Tweak in $Tweaks){
-	if ($Functions -contains $Tweak){ Invoke-Expression $Tweak }
-	else { Out-put "Failed to find $($Tweak) in script functions" }
+	$error.clear()
+	if ( $Tweak.Validation -eq "Valid" ){
+		switch ($PsCmdlet.ParameterSetName){
+			"Preset" { Invoke-Expression "$($Tweak.Tweak) -$($Tweak.Parameter) $($Tweak.ParameterOption)" }
+			"Select" { Invoke-Expression $Tweak.Tweak }
+			}
+		if ( $error ){ $Tweak.Applied = $False } else { $Tweak.Applied = $True }
+		}
+	else { Out-put "Failed to find $($Tweak.Tweak) in script functions" }
 	}
 if ($WaitForKey) {
-	Write-Host
 	Write-Host "Press any key to continue..." -ForegroundColor Black -BackgroundColor White
 	[Console]::ReadKey($true) | Out-Null
 	}
@@ -48,167 +67,185 @@ if ($RestartComputer){ Restart-Computer }
 }
 
 begin{
-
+$nl = [Environment]::NewLine
+#properties of custom tweak object
+$TweakHdr = @("Tweak","Parameter","ParameterOption","Scope","Validation","Applied")
 # Default preset
-$Functions = @(
-"Set-Telemetry",
-"Set-WiFiSense",
-"Set-SmartScreen",
-"Set-WebSearch",
-"Set-AppSuggestions",
-"Set-ActivityHistory",
-"Set-StartSuggestions",
-"Set-BackgroundApps",
-"Set-LockScreenSpotlight",
-"Set-LocationTracking",
-"Set-MapUpdates",
-"Set-Feedback",
-"Set-TailoredExperiences",
-"Set-AdvertisingID",
-"Set-WebLangList",
-"Set-Cortana",
-"Set-ErrorReporting",
-"Set-P2PUpdate",
-"Set-AutoLogger",
-"Set-DiagTrack",
-"Set-WAPPush",
-"Set-UAClevel",
-"Set-SharingMappedDrives",
-"Set-AdminShares",
-"Set-SMBv1",
-"Set-SMBServer",
-"Set-LLMNR",
-"Set-CurrentNetworkProfile",
-"Set-UnknownNetworkProfile",
-"Set-NetDevicesAutoInst",
-"Set-FolderAccessControl",
-"Set-Firewall",
-"Set-WindowsDefender",
-"Set-WindowsDefenderCloud",
-"Set-F8BootMenu",
-"Set-DEPOption",
-"Set-CIMemoryIntegrity",
-"Set-DotNetStrongCrypto",
-"Set-ScriptHost",
-"Set-MeltdownCompatFlag",
-"Set-UpdateMSRT",
-"Set-UpdateDrivers",
-"Set-UpdateRestart",
-"Set-HomeGroupServices",
-"Set-SharedExperiences",
-"Set-RemoteAssistance",
-"Set-RemoteDesktop",
-"Set-AutoPlay",
-"Set-AutoRun",
-"Set-StorageSense",
-"Set-Defragmentation",
-"Set-SuperFetch",
-"Set-Indexing",
-"Set-BIOSTimeZone",
-"Set-Hibernation",
-"Set-SleepButton",
-"Set-SleepTimeout",
-"Set-FastStartUp",
-"Set-ActionCenter",
-"Set-AccountProtectionWarning",
-"Set-LockScreen",
-"Set-LockScreenRS1",
-"Set-LockScreenNetworkConnection",
-"Set-LockScreenShutdownMenu",
-"Set-StickyKeys",
-"Set-TaskManagerDetails",
-"Set-FileOperationsDetails",
-"Set-FileDeleteConfirm",
-"Set-TaskbarSearchOption",
-"Set-TaskViewButton",
-"Set-TaskbarIconSize",
-"Set-TaskbarCombineTitles",
-"Set-TaskbarPeopleIcon",
-"Set-TrayIcons",
-"Set-DisplayKnownExtensions",
-"Set-ShowHiddenFiles",
-"SelectCheckboxes",
-"Set-ShowSyncNotifications",
-"Set-ShowRecentShortcuts",
-"Set-SetExplorerDefaultView",
-"Set-ThisPCIconOnDesktop",
-"Set-ShowUserFolderOnDesktop",
-"Set-DesktopInThisPC",
-"Set-DesktopIconInExplorer",
-"Set-DocumentsIconInExplorer",
-"Set-DocumentsIconInThisPC",
-"Set-DownloadsIconInThisPC",
-"Set-DownloadsIconInExplorer",
-"Set-MusicIconInThisPC",
-"Set-MusicIconInExplorer",
-"Set-PicturesIconInThisPC",
-"Set-PicturesIconInExplorer",
-"Set-VideosIconInThisPC",
-"Set-VideosIconInExplorer",
-"Set-3DObjectsInThisPC",
-"Set-3DObjectsInExplorer",
-"Set-VisualFX",
-"Set-ShowThumbnails",
-"Set-LocalThumbnailsDB",
-"Set-NetworkThumbnailsDB",
-"Set-KeyboardLayout",
-"Set-Numlock",
-"Set-OneDriveStartUp",
-"Set-OneDriveProvisioning",
-"Set-ProvisionedPackages",
-"Set-Provisioned3PartyPackages",
-"Set-WindowsStoreProvisioning",
-"Set-ConsumerApps",
-"Set-XboxFeature",
-"Set-AdobeFlash",
-"Set-WindowsFeature",
-"Set-MediaPlayerFeature",
-"Set-PDFprinter",
-"Set-Faxprinter",
-"Set-XPSprinter",
-"Set-InternetExplorerFeature",
-"Set-WorkFoldersFeature",
-"Set-LinuxSubsystemFeature",
-"Set-HyperVFeature",
-"Set-EdgeShortcutCreation",
-"Set-PhotoViewerAssociation",
-"Set-PhotoViewerOpenWith",
-"Set-SearchAppInStore",
-"Set-NewAppPrompt",
-"Set-ControlPanelView",
-"Set-DEP",
-"Set-ServerManagerOnLogin",
-"Set-ShutdownTracker",
-"Set-PasswordPolicy",
-"Set-CtrlAltDelLogin",
-"Set-IEEnhancedSecurity",
-"Set-Audio"
-)
-
-# Load function names from command line arguments or a preset file
-switch ($PsCmdlet.ParameterSetName){
-	"Preset" { $Tweaks = Get-Content $PresetFile }
-	"Input" { continue }
-	"Select" { $Tweaks = $Functions | Out-GridView -Title "Select Tweaks to apply" -PassThru }
-	}
-#buffering array for output at end of script
-$script:output = @()
+$Tweaks = @"
+"Set-Telemetry","Status","Enabled,Disabled","SpyWare"
+"Set-WiFiSense","Status","Enabled,Disabled","OS"
+"Set-SmartScreen","Status","Enabled,Disabled","Security"
+"Set-WebSearch","Status","Enabled,Disabled","Search"
+"Set-AppSuggestions","Status","Enabled,Disabled","BloatWare"
+"Set-ActivityHistory","Status","Enabled,Disabled","SpyWare"
+"Set-StartSuggestions","Status","Enabled,Disabled","BloatWare"
+"Set-BackgroundApps","Status","Enabled,Disabled","OS"
+"Set-LockScreenSpotlight","Status","Enabled,Disabled","Advertising"
+"Set-LocationTracking","Status","Enabled,Disabled","SpyWare"
+"Set-MapUpdates","Status","Enabled,Disabled","OS"
+"Set-Feedback","Status","Enabled,Disabled","SpyWare"
+"Set-TailoredExperiences","Status","Enabled,Disabled","SpyWare"
+"Set-AdvertisingID","Status","Enabled,Disabled","Advertising"
+"Set-WebLangList","Status","Enabled,Disabled","OS"
+"Set-Cortana","Status","Enabled,Disabled","Search"
+"Set-ErrorReporting","Status","Enabled,Disabled","SpyWare"
+"Set-P2PUpdate","Status","Local,Internet","OS"
+"Set-AutoLogger","Status","Enabled,Disabled","SpyWare"
+"Set-DiagTrack","Status","Enabled,Disabled","SpyWare"
+"Set-WAPPush","Status","Enabled,Disabled","OS"
+"Set-UAClevel","Status","Low,High","Security"
+"Set-SharingMappedDrives","Status","Enabled,Disabled","OS"
+"Set-AdminShares","Status","Enabled,Disabled","OS"
+"Set-SMBv1","Status","Enabled,Disabled","OS"
+"Set-SMBServer","Status","Enabled,Disabled","OS"
+"Set-LLMNR","Status","Enabled,Disabled","OS"
+"Set-CurrentNetworkProfile","Status","Private,Public","OS"
+"Set-UnknownNetworkProfile","Status","Private,Public","OS"
+"Set-NetDevicesAutoInst","Status","Enabled,Disabled","OS"
+"Set-FolderAccessControl","Status","Enabled,Disabled","Security"
+"Set-Firewall","Status","Enabled,Disabled","Security"
+"Set-WindowsDefender","Status","Enabled,Disabled","Security"
+"Set-WindowsDefenderCloud","Status","Enabled,Disabled","Security"
+"Set-F8BootMenu","Status","Legacy,Standard","OS"
+"Set-DEPOption","Status","OptIn,OptOut","Security"
+"Set-CIMemoryIntegrity","Status","Enabled,Disabled","Security"
+"Set-DotNetStrongCrypto","Status","Enabled,Disabled","Security"
+"Set-ScriptHost","Status","Enabled,Disabled","Security"
+"Set-MeltdownCompatFlag","Status","Enabled,Disabled","OS"
+"Set-UpdateMSRT","Status","Enabled,Disabled","Security"
+"Set-UpdateDrivers","Status","Enabled,Disabled","OS"
+"Set-UpdateRestart","Status","Enabled,Disabled","OS"
+"Set-HomeGroupServices","Status","Enabled,Disabled","OS"
+"Set-SharedExperiences","Status","Enabled,Disabled","SpyWare"
+"Set-RemoteAssistance","Status","Enabled,Disabled","OS"
+"Set-RemoteDesktop","Status","Enabled,Disabled","OS"
+"Set-AutoPlay","Status","Enabled,Disabled","Security"
+"Set-AutoRun","Status","Enabled,Disabled","Security"
+"Set-StorageSense","Status","Enabled,Disabled","OS"
+"Set-Defragmentation","Status","Enabled,Disabled","OS"
+"Set-SuperFetch","Status","Enabled,Disabled","OS"
+"Set-Indexing","Status","Enabled,Disabled","Search"
+"Set-BIOSTimeZone","Status","UTC,Local","OS"
+"Set-Hibernation","Status","Enabled,Disabled","OS"
+"Set-SleepButton","Status","Enabled,Disabled","OS"
+"Set-SleepTimeout","Status","Enabled,Disabled","OS"
+"Set-FastStartUp","Status","Enabled,Disabled","OS"
+"Set-ActionCenter","Status","Enabled,Disabled","OS"
+"Set-AccountProtectionWarning","Status","Enabled,Disabled","Security"
+"Set-LockScreen","Status","Enabled,Disabled","Security"
+"Set-LockScreenRS1","Status","Enabled,Disabled","Security"
+"Set-LockScreenNetworkConnection","Status","Enabled,Disabled","Security"
+"Set-LockScreenShutdownMenu","Status","Enabled,Disabled","Security"
+"Set-StickyKeys","Status","Enabled,Disabled","Explorer"
+"Set-TaskManagerDetails","Status","Enabled,Disabled","Explorer"
+"Set-FileOperationsDetails","Status","Enabled,Disabled","Explorer"
+"Set-FileDeleteConfirm","Status","Enabled,Disabled","Explorer"
+"Set-TaskbarSearchOption","Status","Box,Icon,Hidden","Explorer"
+"Set-TaskViewButton","Status","Enabled,Disabled","Explorer"
+"Set-TaskbarIconSize","Status","Small,Large","Explorer"
+"Set-TaskbarCombineTitles","Status","WhenFull,Never,Always","Explorer"
+"Set-TaskbarPeopleIcon","Status","Enabled,Disabled","Explorer"
+"Set-TrayIcons","Status","Enabled,Disabled","Explorer"
+"Set-DisplayKnownExtensions","Status","Enabled,Disabled","Explorer"
+"Set-ShowHiddenFiles","Status","Enabled,Disabled","Explorer"
+"SelectCheckboxes","Status","Enabled,Disabled","Explorer"
+"Set-ShowSyncNotifications","Status","Enabled,Disabled","Explorer"
+"Set-ShowRecentShortcuts","Status","Enabled,Disabled","Explorer"
+"Set-SetExplorerDefaultView","Status","ThisPC,QuickAccess","Explorer"
+"Set-ThisPCIconOnDesktop","Status","Enabled,Disabled","Explorer"
+"Set-ShowUserFolderOnDesktop","Status","Enabled,Disabled","Explorer"
+"Set-DesktopInThisPC","Status","Enabled,Disabled","Explorer"
+"Set-DesktopIconInExplorer","Status","Enabled,Disabled","Explorer"
+"Set-DocumentsIconInExplorer","Status","Enabled,Disabled","Explorer"
+"Set-DocumentsIconInThisPC","Status","Enabled,Disabled","Explorer"
+"Set-DownloadsIconInThisPC","Status","Enabled,Disabled","Explorer"
+"Set-DownloadsIconInExplorer","Status","Enabled,Disabled","Explorer"
+"Set-MusicIconInThisPC","Status","Enabled,Disabled","Explorer"
+"Set-MusicIconInExplorer","Status","Enabled,Disabled","Explorer"
+"Set-PicturesIconInThisPC","Status","Enabled,Disabled","Explorer"
+"Set-PicturesIconInExplorer","Status","Enabled,Disabled","Explorer"
+"Set-VideosIconInThisPC","Status","Enabled,Disabled","Explorer"
+"Set-VideosIconInExplorer","Status","Enabled,Disabled","Explorer"
+"Set-3DObjectsInThisPC","Status","Enabled,Disabled","Explorer"
+"Set-3DObjectsInExplorer","Status","Enabled,Disabled","Explorer"
+"Set-VisualFX","Status","Performance,Quality","Explorer"
+"Set-ShowThumbnails","Status","Enabled,Disabled","Explorer"
+"Set-LocalThumbnailsDB","Status","Enabled,Disabled","Explorer"
+"Set-NetworkThumbnailsDB","Status","Enabled,Disabled","Explorer"
+#set desired parameter KeyboardLayout to add or remove!!!
+"Set-KeyboardLayout","Status","Add,Remove","OS"
+"Set-Numlock","Status","Enabled,Disabled","OS"
+"Set-OneDriveStartUp","Status","Enabled,Disabled","OS"
+"Set-OneDriveProvisioning","Status","Enabled,Disabled","OS"
+"Set-ProvisionedPackages","Status","Enabled,Disabled","BloatWare"
+"Set-Provisioned3PartyPackages","Status","Enabled,Disabled","BloatWare"
+"Set-WindowsStoreProvisioning","Status","Enabled,Disabled","BloatWare"
+"Set-ConsumerApps","Status","Enabled,Disabled","BloatWare"
+"Set-XboxFeature","Status","Enabled,Disabled","BloatWare"
+"Set-AdobeFlash","Status","Enabled,Disabled","Browser"
+"Set-WindowsFeature","Status","Enabled,Disabled","Feature"
+"Set-MediaPlayerFeature","Status","Enabled,Disabled","Feature"
+"Set-PDFprinter","Status","Enabled,Disabled","Feature"
+"Set-Faxprinter","Status","Enabled,Disabled","Feature"
+"Set-XPSprinter","Status","Enabled,Disabled","Feature"
+"Set-InternetExplorerFeature","Status","Enabled,Disabled","Feature"
+"Set-WorkFoldersFeature","Status","Enabled,Disabled","Feature"
+"Set-LinuxSubsystemFeature","Status","Enabled,Disabled","Feature"
+"Set-HyperVFeature","Status","Enabled,Disabled","Feature"
+"Set-EdgeShortcutCreation","Status","Enabled,Disabled","Browser"
+"Set-PhotoViewerAssociation","Status","Enabled,Disabled","OS"
+"Set-PhotoViewerOpenWith","Status","Enabled,Disabled","OS"
+"Set-SearchAppInStore","Status","Enabled,Disabled","Feature"
+"Set-NewAppPrompt","Status","Enabled,Disabled","Explorer"
+"Set-ControlPanelView","Status","Category,Large,Small","Explorer"
+"Set-DEP","Status","OptOut,OptIn","Security"
+"Set-ServerManagerOnLogin","Status","Enabled,Disabled","Explorer"
+"Set-ShutdownTracker","Status","Enabled,Disabled","Explorer"
+#set required parameters in function PasswordPolicy parameter set!!!
+"Set-PasswordPolicy","","","Security"
+"Set-CtrlAltDelLogin","Status","Enabled,Disabled","Security"
+"Set-IEEnhancedSecurity","Status","Enabled,Disabled","Security"
+"Set-Audio","Status","Enabled,Disabled","OS"
+"@ | ConvertFrom-Csv -Delimiter "," -Header $TweakHdr
 
 #Script Functions
-if ($RedirectOutput -eq "Log"){
-	$script:LogFilePath = New-TemporaryFile
-	Write-Output "results will be saved to $($script:LogFilePath)"
-	#$stream = [System.IO.StreamWriter] $script:LogFilePath.FullName
+switch ($RedirectOutput){
+	"Host" { Write-Host "Output will be immediately redirected to Host during script execution" }
+	"Log" { 
+		$script:LogFilePath = New-TemporaryFile
+		Write-Output "results will be saved to $($script:LogFilePath)"
+		}
+	"Pipe" { $script:Output = @() }
 	}
 
 #output depending on global -RedirectOutput parameter
 Function Out-put ( $InString ) {
 Write-Verbose $InString
 switch ($RedirectOutput){
-	"Host" {Write-Host $InString}
-	"Log" {Out-File $script:LogFilePath $InString -Append}
-	"Pipe" {$script:Output += $InString}
+	"Host" { Write-Host $InString }
+	"Log" { Out-File $script:LogFilePath $InString -Append }
+	"Pipe" { $script:Output += $InString }
 	}
+}
+
+Function Test-Tweak {
+param (
+[object[]]$Tweaks
+)
+ForEach ($Tweak in $Tweaks){
+	$objTweak = $Tweaks | ?{($_.Tweak -eq $Tweak.Tweak)}
+	if ( $objTweak ) {
+		if ( $objTweak.Parameter -eq $Tweak.Parameter ){
+			if ( $objTweak.ParameterOption -contains $Tweak.ParameterOption ){ $Validation = "Valid" }
+			else { $Validation = "Invalid ParameterOption" }
+			}
+		else { $Validation = "Wrong Parameter" }
+		}
+	else { $Validation = "Unknown Tweak" }
+	$Tweak.Validation = $Validation
+	$Tweak.Applied = $False
+	}
+return $Tweaks
 }
 
 # Generic Set-Remove Single RegKey Function
@@ -235,7 +272,7 @@ else {
 		Out-put "setting $($Description) to $($Status)"
 		If (!(Test-Path $RegPath)) { New-Item -Path $RegPath -Force | Out-Null }
 		Set-ItemProperty -Path $RegPath -Name $RegKey -Type $RegType -Value $RegVal
-		Out-put "set value in $($RegPath) $($RegKey) to $($RegVal)"
+		Write-Verbose "$($RegPath) $($RegKey) is set to $($RegVal)"
 		}
 	catch { Out-put "could not set value of $($RegVal) in $($RegPath) $($RegKey)"}
 	}
@@ -386,7 +423,7 @@ Out-put "setting $($Description) to $($Status)"
 try{
 	switch ($Status){
 		"Disabled" {
-			$RegVal = 0 
+			$RegVal = 0
 			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[7] -Type DWord -Value $RegVal
 			If (!(Test-Path $RegPaths[1])) { New-Item -Path $RegPaths[1] -Force | Out-Null }
 			Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[8] -Type DWord -Value $RegVals[1]
@@ -417,7 +454,7 @@ Out-put "setting $($Description) to $($Status)"
 try{
 	switch ($Status){
 		"Disabled" {
-			$RegVal = 0 
+			$RegVal = 0
 			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[1] -Type DWord -Value $RegVal
 			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[2] -Type DWord -Value $RegVal
 			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[3] -Type DWord -Value $RegVal
@@ -470,22 +507,22 @@ try{
 	switch ($Status){
 		"Enabled"{
 			foreach ($RegPath in $RegPaths){
-				foreach ($RegKey in $RegKeys){ 
-					Remove-ItemProperty -Path $RegPath -Name $RegKey -ErrorAction SilentlyContinue 
+				foreach ($RegKey in $RegKeys){
+					Remove-ItemProperty -Path $RegPath -Name $RegKey -ErrorAction SilentlyContinue
 					}
 				}
 			}
 		"Disabled" {
 			$RegVal = 1
 			foreach ($RegPath in $RegPaths){
-				foreach ($RegKey in $RegKeys){ 
+				foreach ($RegKey in $RegKeys){
 					Set-ItemProperty -Path $RegPath -Name $RegKey -Type DWord -Value $RegVal
 					}
 				}
 			}
 		}
 	}
-catch { Out-put "could not set $($RegPaths[0]) to $($Status)" }
+catch { Out-put "could not set $($Description) to $($Status)" }
 }#Set-BackgroundApps
 
 # Set LockScreen Advertising
@@ -510,7 +547,7 @@ try{
 			Remove-ItemProperty -Path $RegPaths[0] -Name $RegKeys[2] -ErrorAction SilentlyContinue
 			}
 		"Disabled" {
-			$RegVal = 0		
+			$RegVal = 0
 			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Type DWord -Value $RegVal
 			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[1] -Type DWord -Value $RegVal
 			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[2] -Type DWord -Value $RegVal
@@ -904,7 +941,7 @@ $Description = "SMB Server"
 try {
 	switch ($Status){
 		"Enabled"{ Set-SmbServerConfiguration -EnableSMB2Protocol $true -Force }
-		"Disabled" { 
+		"Disabled" {
 			Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force
 			Set-SmbServerConfiguration -EnableSMB2Protocol $false -Force
 			}
@@ -1603,7 +1640,7 @@ try {
 				powercfg /X monitor-timeout-ac 0
 				powercfg /X monitor-timeout-dc 0
 				powercfg /X standby-timeout-ac 0
-				powercfg /X standby-timeout-dc 0			
+				powercfg /X standby-timeout-dc 0
 			}
 		"Enabled" {
 				powercfg /X monitor-timeout-ac 10
@@ -2254,15 +2291,15 @@ $RegPaths = @( "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyCompu
 Out-put "setting $($Description) to $($Status)"
 try {
 	switch ($Status){
-		"Enabled"{ 
-			foreach ($RegPath in $RegPaths){ 
-				If (!(Test-Path $RegPath )) { New-Item -Path $RegPath | Out-Null } 
+		"Enabled"{
+			foreach ($RegPath in $RegPaths){
+				If (!(Test-Path $RegPath )) { New-Item -Path $RegPath | Out-Null }
 				}
 			}
-		"Disabled" { 
-			foreach ($RegPath in $RegPaths){ 
-				Remove-Item -Path $RegPath -Recurse -ErrorAction SilentlyContinue 
-				} 
+		"Disabled" {
+			foreach ($RegPath in $RegPaths){
+				Remove-Item -Path $RegPath -Recurse -ErrorAction SilentlyContinue
+				}
 			}
 		}
 	}
@@ -2278,13 +2315,13 @@ $RegPaths = @( "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyCompu
 Out-put "setting $($Description) to $($Status)"
 try {
 	switch ($Status){
-		"Enabled"{ 
+		"Enabled"{
 			If (!(Test-Path $RegPaths[0] )) { New-Item -Path $RegPaths[0] | Out-Null }
 			If (!(Test-Path $RegPaths[1] )) { New-Item -Path $RegPaths[0] | Out-Null }
 			}
 		"Disabled" {
-			Remove-Item -Path $RegPaths[0] -Recurse -ErrorAction SilentlyContinue 
-			Remove-Item -Path $RegPaths[1] -Recurse -ErrorAction SilentlyContinue 
+			Remove-Item -Path $RegPaths[0] -Recurse -ErrorAction SilentlyContinue
+			Remove-Item -Path $RegPaths[1] -Recurse -ErrorAction SilentlyContinue
 			}
 		}
 	}
@@ -2356,11 +2393,11 @@ $RegPaths = @( "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyCompu
 Out-put "setting $($Description) to $($Status)"
 try {
 	switch ($Status){
-		"Enabled"{ 
-			If (!(Test-Path $RegPaths[0] )) { New-Item -Path $RegPaths[0] | Out-Null } 
-			If (!(Test-Path $RegPaths[1] )) { New-Item -Path $RegPaths[1] | Out-Null } 
+		"Enabled"{
+			If (!(Test-Path $RegPaths[0] )) { New-Item -Path $RegPaths[0] | Out-Null }
+			If (!(Test-Path $RegPaths[1] )) { New-Item -Path $RegPaths[1] | Out-Null }
 			}
-		"Disabled" { 
+		"Disabled" {
 			Remove-Item -Path $RegPaths[0] -Recurse -ErrorAction SilentlyContinue
 			Remove-Item -Path $RegPaths[1] -Recurse -ErrorAction SilentlyContinue
 			}
@@ -2792,7 +2829,7 @@ param(
 	)
 )
 switch ($Status){
-	"Enabled" { 
+	"Enabled" {
 		ForEach ($AppXPackage in $AppxPackages){
 			Get-AppxPackage -AllUsers $AppxPackage | ForEach { Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" }
 			}
@@ -2811,7 +2848,7 @@ param(
 [string[]]$AppXPackages = @( "Microsoft.DesktopAppInstaller","Microsoft.WindowsStore" )
 )
 switch ($Status){
-	"Enabled" { 
+	"Enabled" {
 		ForEach ($AppXPackage in $AppxPackages){
 			Get-AppxPackage -AllUsers $AppxPackage | ForEach { Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" }
 			}
@@ -2905,7 +2942,7 @@ try {
 			If (!(Test-Path $RegPaths[0])) { New-Item -Path $RegPaths[0] -Force | Out-Null }
 			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Type DWord -Value 0
 			If (!(Test-Path $RegPaths[1])) { New-Item -Path $RegPaths[1] -Force | Out-Null }
-			Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[1] -Type DWord -Value 1			
+			Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[1] -Type DWord -Value 1
 			}
 		}
 	}
@@ -3162,18 +3199,18 @@ $RegPath = @("HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPa
 $RegKey = @("StartupPage","AllItemsIconView")
 Out-put "Setting $($Description)  to $($Status)"
 switch ($Status){
-	"Category"{ 
+	"Category"{
 		Remove-ItemProperty -Path $RegPath[0] -Name $RegKey[0] -ErrorAction SilentlyContinue
 		Remove-ItemProperty -Path $RegPath[0] -Name $RegKey[1] -ErrorAction SilentlyContinue }
-	"Large" { 
+	"Large" {
 		If (!(Test-Path $RegPath[0])) { New-Item -Path $RegPath[0] | Out-Null }
 		Set-ItemProperty -Path $RegPath[0] -Name $RegKey[0] -Type DWord -Value 1
-		Set-ItemProperty -Path $RegPath[0] -Name $RegKey[1] -Type DWord -Value 0 
+		Set-ItemProperty -Path $RegPath[0] -Name $RegKey[1] -Type DWord -Value 0
 		}
-	"Small" { 
+	"Small" {
 		If (!(Test-Path $RegPath[0])) { New-Item -Path $RegPath[0] | Out-Null }
 		Set-ItemProperty -Path $RegPath[0] -Name $RegKey[0] -Type DWord -Value 1
-		Set-ItemProperty -Path $RegPath[0] -Name $RegKey[1] -Type DWord -Value 1 
+		Set-ItemProperty -Path $RegPath[0] -Name $RegKey[1] -Type DWord -Value 1
 		}
 	}
 }
@@ -3305,7 +3342,7 @@ try {
 	switch ($Status){
 		"Disabled"{
 			Stop-Service "Audiosrv" -WarningAction SilentlyContinue
-			Set-Service "Audiosrv" -StartupType Manual	
+			Set-Service "Audiosrv" -StartupType Manual
 			}
 		"Enabled" {
 			Set-Service "Audiosrv" -StartupType Automatic
