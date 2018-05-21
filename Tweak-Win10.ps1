@@ -66,146 +66,171 @@ if ($WaitForKey) {
 if ($RestartComputer){ Restart-Computer }
 }
 
-begin{
+begin {
 $nl = [Environment]::NewLine
 #properties of custom tweak object
 $TweakHdr = @("Tweak","Parameter","ParameterOption","Scope","Validation","Applied")
 # Default preset
 $Tweaks = @"
-"Set-Telemetry","Status","Enabled,Disabled","SpyWare"
-"Set-WiFiSense","Status","Enabled,Disabled","OS"
-"Set-SmartScreen","Status","Enabled,Disabled","Security"
-"Set-WebSearch","Status","Enabled,Disabled","Search"
-"Set-AppSuggestions","Status","Enabled,Disabled","BloatWare"
-"Set-ActivityHistory","Status","Enabled,Disabled","SpyWare"
-"Set-StartSuggestions","Status","Enabled,Disabled","BloatWare"
-"Set-BackgroundApps","Status","Enabled,Disabled","OS"
-"Set-LockScreenSpotlight","Status","Enabled,Disabled","Advertising"
-"Set-LocationTracking","Status","Enabled,Disabled","SpyWare"
-"Set-MapUpdates","Status","Enabled,Disabled","OS"
-"Set-Feedback","Status","Enabled,Disabled","SpyWare"
-"Set-TailoredExperiences","Status","Enabled,Disabled","SpyWare"
-"Set-AdvertisingID","Status","Enabled,Disabled","Advertising"
-"Set-WebLangList","Status","Enabled,Disabled","OS"
-"Set-Cortana","Status","Enabled,Disabled","Search"
-"Set-ErrorReporting","Status","Enabled,Disabled","SpyWare"
-"Set-P2PUpdate","Status","Local,Internet","OS"
-"Set-AutoLogger","Status","Enabled,Disabled","SpyWare"
-"Set-DiagTrack","Status","Enabled,Disabled","SpyWare"
-"Set-WAPPush","Status","Enabled,Disabled","OS"
-"Set-UAClevel","Status","Low,High","Security"
-"Set-SharingMappedDrives","Status","Enabled,Disabled","OS"
-"Set-AdminShares","Status","Enabled,Disabled","OS"
-"Set-SMBv1","Status","Enabled,Disabled","OS"
-"Set-SMBServer","Status","Enabled,Disabled","OS"
-"Set-LLMNR","Status","Enabled,Disabled","OS"
-"Set-CurrentNetworkProfile","Status","Private,Public","OS"
-"Set-UnknownNetworkProfile","Status","Private,Public","OS"
-"Set-NetDevicesAutoInst","Status","Enabled,Disabled","OS"
-"Set-FolderAccessControl","Status","Enabled,Disabled","Security"
-"Set-Firewall","Status","Enabled,Disabled","Security"
-"Set-WindowsDefender","Status","Enabled,Disabled","Security"
-"Set-WindowsDefenderCloud","Status","Enabled,Disabled","Security"
-"Set-F8BootMenu","Status","Legacy,Standard","OS"
-"Set-DEPOption","Status","OptIn,OptOut","Security"
-"Set-CIMemoryIntegrity","Status","Enabled,Disabled","Security"
-"Set-DotNetStrongCrypto","Status","Enabled,Disabled","Security"
-"Set-ScriptHost","Status","Enabled,Disabled","Security"
-"Set-MeltdownCompatFlag","Status","Enabled,Disabled","OS"
-"Set-UpdateMSRT","Status","Enabled,Disabled","Security"
-"Set-UpdateDrivers","Status","Enabled,Disabled","OS"
-"Set-UpdateRestart","Status","Enabled,Disabled","OS"
-"Set-HomeGroupServices","Status","Enabled,Disabled","OS"
-"Set-SharedExperiences","Status","Enabled,Disabled","SpyWare"
-"Set-RemoteAssistance","Status","Enabled,Disabled","OS"
-"Set-RemoteDesktop","Status","Enabled,Disabled","OS"
-"Set-AutoPlay","Status","Enabled,Disabled","Security"
-"Set-AutoRun","Status","Enabled,Disabled","Security"
-"Set-StorageSense","Status","Enabled,Disabled","OS"
-"Set-Defragmentation","Status","Enabled,Disabled","OS"
-"Set-SuperFetch","Status","Enabled,Disabled","OS"
-"Set-Indexing","Status","Enabled,Disabled","Search"
-"Set-BIOSTimeZone","Status","UTC,Local","OS"
-"Set-Hibernation","Status","Enabled,Disabled","OS"
-"Set-SleepButton","Status","Enabled,Disabled","OS"
-"Set-SleepTimeout","Status","Enabled,Disabled","OS"
-"Set-FastStartUp","Status","Enabled,Disabled","OS"
-"Set-ActionCenter","Status","Enabled,Disabled","OS"
-"Set-AccountProtectionWarning","Status","Enabled,Disabled","Security"
-"Set-LockScreen","Status","Enabled,Disabled","Security"
-"Set-LockScreenRS1","Status","Enabled,Disabled","Security"
-"Set-LockScreenNetworkConnection","Status","Enabled,Disabled","Security"
-"Set-LockScreenShutdownMenu","Status","Enabled,Disabled","Security"
-"Set-StickyKeys","Status","Enabled,Disabled","Explorer"
-"Set-TaskManagerDetails","Status","Enabled,Disabled","Explorer"
-"Set-FileOperationsDetails","Status","Enabled,Disabled","Explorer"
-"Set-FileDeleteConfirm","Status","Enabled,Disabled","Explorer"
-"Set-TaskbarSearchOption","Status","Box,Icon,Hidden","Explorer"
-"Set-TaskViewButton","Status","Enabled,Disabled","Explorer"
-"Set-TaskbarIconSize","Status","Small,Large","Explorer"
-"Set-TaskbarCombineTitles","Status","WhenFull,Never,Always","Explorer"
-"Set-TaskbarPeopleIcon","Status","Enabled,Disabled","Explorer"
-"Set-TrayIcons","Status","Enabled,Disabled","Explorer"
-"Set-DisplayKnownExtensions","Status","Enabled,Disabled","Explorer"
-"Set-ShowHiddenFiles","Status","Enabled,Disabled","Explorer"
-"SelectCheckboxes","Status","Enabled,Disabled","Explorer"
-"Set-ShowSyncNotifications","Status","Enabled,Disabled","Explorer"
-"Set-ShowRecentShortcuts","Status","Enabled,Disabled","Explorer"
-"Set-SetExplorerDefaultView","Status","ThisPC,QuickAccess","Explorer"
-"Set-ThisPCIconOnDesktop","Status","Enabled,Disabled","Explorer"
-"Set-ShowUserFolderOnDesktop","Status","Enabled,Disabled","Explorer"
-"Set-DesktopInThisPC","Status","Enabled,Disabled","Explorer"
-"Set-DesktopIconInExplorer","Status","Enabled,Disabled","Explorer"
-"Set-DocumentsIconInExplorer","Status","Enabled,Disabled","Explorer"
-"Set-DocumentsIconInThisPC","Status","Enabled,Disabled","Explorer"
-"Set-DownloadsIconInThisPC","Status","Enabled,Disabled","Explorer"
-"Set-DownloadsIconInExplorer","Status","Enabled,Disabled","Explorer"
-"Set-MusicIconInThisPC","Status","Enabled,Disabled","Explorer"
-"Set-MusicIconInExplorer","Status","Enabled,Disabled","Explorer"
-"Set-PicturesIconInThisPC","Status","Enabled,Disabled","Explorer"
-"Set-PicturesIconInExplorer","Status","Enabled,Disabled","Explorer"
-"Set-VideosIconInThisPC","Status","Enabled,Disabled","Explorer"
-"Set-VideosIconInExplorer","Status","Enabled,Disabled","Explorer"
-"Set-3DObjectsInThisPC","Status","Enabled,Disabled","Explorer"
-"Set-3DObjectsInExplorer","Status","Enabled,Disabled","Explorer"
-"Set-VisualFX","Status","Performance,Quality","Explorer"
-"Set-ShowThumbnails","Status","Enabled,Disabled","Explorer"
-"Set-LocalThumbnailsDB","Status","Enabled,Disabled","Explorer"
-"Set-NetworkThumbnailsDB","Status","Enabled,Disabled","Explorer"
-#set desired parameter KeyboardLayout to add or remove!!!
-"Set-KeyboardLayout","Status","Add,Remove","OS"
-"Set-Numlock","Status","Enabled,Disabled","OS"
-"Set-OneDriveStartUp","Status","Enabled,Disabled","OS"
-"Set-OneDriveProvisioning","Status","Enabled,Disabled","OS"
-"Set-ProvisionedPackages","Status","Enabled,Disabled","BloatWare"
-"Set-Provisioned3PartyPackages","Status","Enabled,Disabled","BloatWare"
-"Set-WindowsStoreProvisioning","Status","Enabled,Disabled","BloatWare"
-"Set-ConsumerApps","Status","Enabled,Disabled","BloatWare"
-"Set-XboxFeature","Status","Enabled,Disabled","BloatWare"
-"Set-AdobeFlash","Status","Enabled,Disabled","Browser"
-"Set-WindowsFeature","Status","Enabled,Disabled","Feature"
-"Set-MediaPlayerFeature","Status","Enabled,Disabled","Feature"
-"Set-PDFprinter","Status","Enabled,Disabled","Feature"
-"Set-Faxprinter","Status","Enabled,Disabled","Feature"
-"Set-XPSprinter","Status","Enabled,Disabled","Feature"
-"Set-InternetExplorerFeature","Status","Enabled,Disabled","Feature"
-"Set-WorkFoldersFeature","Status","Enabled,Disabled","Feature"
-"Set-LinuxSubsystemFeature","Status","Enabled,Disabled","Feature"
-"Set-HyperVFeature","Status","Enabled,Disabled","Feature"
-"Set-EdgeShortcutCreation","Status","Enabled,Disabled","Browser"
-"Set-PhotoViewerAssociation","Status","Enabled,Disabled","OS"
-"Set-PhotoViewerOpenWith","Status","Enabled,Disabled","OS"
-"Set-SearchAppInStore","Status","Enabled,Disabled","Feature"
-"Set-NewAppPrompt","Status","Enabled,Disabled","Explorer"
-"Set-ControlPanelView","Status","Category,Large,Small","Explorer"
-"Set-DEP","Status","OptOut,OptIn","Security"
-"Set-ServerManagerOnLogin","Status","Enabled,Disabled","Explorer"
-"Set-ShutdownTracker","Status","Enabled,Disabled","Explorer"
-#set required parameters in function PasswordPolicy parameter set!!!
-"Set-PasswordPolicy","","","Security"
-"Set-CtrlAltDelLogin","Status","Enabled,Disabled","Security"
-"Set-IEEnhancedSecurity","Status","Enabled,Disabled","Security"
-"Set-Audio","Status","Enabled,Disabled","OS"
+"Set-Telemetry","Status","Enabled,Disabled","SpyWare","Valid"
+"Set-WiFiSense","Status","Enabled,Disabled","OS","Valid"
+"Set-SmartScreen","Status","Enabled,Disabled","Security","Valid"
+"Set-WebSearch","Status","Enabled,Disabled","Search","Valid"
+"Set-AppSuggestions","Status","Enabled,Disabled","BloatWare","Valid"
+"Set-ActivityHistory","Status","Enabled,Disabled","SpyWare","Valid"
+"Set-StartSuggestions","Status","Enabled,Disabled","BloatWare","Valid"
+"Set-BackgroundApps","Status","Enabled,Disabled","OS","Valid"
+"Set-LockScreenSpotlight","Status","Enabled,Disabled","Advertising","Valid"
+"Set-LocationTracking","Status","Enabled,Disabled","SpyWare","Valid"
+"Set-MapUpdates","Status","Enabled,Disabled","OS","Valid"
+"Set-Feedback","Status","Enabled,Disabled","SpyWare","Valid"
+"Set-TailoredExperiences","Status","Enabled,Disabled","SpyWare","Valid"
+"Set-AdvertisingID","Status","Enabled,Disabled","Advertising","Valid"
+"Set-WebLangList","Status","Enabled,Disabled","OS","Valid"
+"Set-Cortana","Status","Enabled,Disabled","Search","Valid"
+"Set-ErrorReporting","Status","Enabled,Disabled","SpyWare","Valid"
+"Set-P2PUpdate","Status","Local,Internet","OS","Valid"
+"Set-CastToDevice","Status","Enabled,Disabled","OS","Valid"
+"Set-AutoLogger","Status","Enabled,Disabled","SpyWare","Valid"
+"Set-DiagTrack","Status","Enabled,Disabled","SpyWare","Valid"
+"Set-WAPPush","Status","Enabled,Disabled","OS","Valid"
+"Set-UAClevel","Status","Low,High","Security","Valid"
+"Set-SharingMappedDrives","Status","Enabled,Disabled","OS","Valid"
+"Set-AdminShares","Status","Enabled,Disabled","OS","Valid"
+"Set-SMBv1","Status","Enabled,Disabled","OS","Valid"
+"Set-SMBServer","Status","Enabled,Disabled","OS","Valid"
+"Set-LLMNR","Status","Enabled,Disabled","OS","Valid"
+"Set-CurrentNetworkProfile","Status","Private,Public","OS","Valid"
+"Set-UnknownNetworkProfile","Status","Private,Public","OS","Valid"
+"Set-NetDevicesAutoInst","Status","Enabled,Disabled","OS","Valid"
+"Set-FolderAccessControl","Status","Enabled,Disabled","Security","Valid"
+"Set-Firewall","Status","Enabled,Disabled","Security","Valid"
+"Set-WindowsDefender","Status","Enabled,Disabled","Security","Valid"
+"Set-WindowsDefenderCloud","Status","Enabled,Disabled","Security","Valid"
+"Set-F8BootMenu","Status","Legacy,Standard","OS","Valid"
+"Set-DEPOption","Status","OptIn,OptOut","Security","Valid"
+"Set-CIMemoryIntegrity","Status","Enabled,Disabled","Security","Valid"
+"Set-DotNetStrongCrypto","Status","Enabled,Disabled","Security","Valid"
+"Set-ScriptHost","Status","Enabled,Disabled","Security","Valid"
+"Set-MeltdownCompatFlag","Status","Enabled,Disabled","OS","Valid"
+"Set-UpdateMSRT","Status","Enabled,Disabled","Security","Valid"
+"Set-UpdateDrivers","Status","Enabled,Disabled","OS","Valid"
+"Set-UpdateRestart","Status","Enabled,Disabled","OS","Valid"
+"Set-WindowsUpdateAlert","Status","Enabled,Disabled","OS","Valid"
+"Set-HomeGroupServices","Status","Enabled,Disabled","OS","Valid"
+"Set-SharedExperiences","Status","Enabled,Disabled","SpyWare","Valid"
+"Set-RemoteAssistance","Status","Enabled,Disabled","OS","Valid"
+"Set-RemoteDesktop","Status","Enabled,Disabled","OS","Valid"
+"Set-AutoPlay","Status","Enabled,Disabled","Security","Valid"
+"Set-AutoRun","Status","Enabled,Disabled","Security","Valid"
+"Set-StorageSense","Status","Enabled,Disabled","OS","Valid"
+"Set-Defragmentation","Status","Enabled,Disabled","OS","Valid"
+"Set-SuperFetch","Status","Enabled,Disabled","OS","Valid"
+"Set-Indexing","Status","Enabled,Disabled","Search","Valid"
+"Set-BIOSTimeZone","Status","UTC,Local","OS","Valid"
+"Set-Hibernation","Status","Enabled,Disabled","OS","Valid"
+"Set-SleepButton","Status","Enabled,Disabled","OS","Valid"
+"Set-SleepTimeout","Status","Enabled,Disabled","OS","Valid"
+"Set-FastStartUp","Status","Enabled,Disabled","OS","Valid"
+"Set-ActionCenter","Status","Enabled,Disabled","OS","Valid"
+"Set-AccountProtectionWarning","Status","Enabled,Disabled","Security","Valid"
+"Set-LockScreen","Status","Enabled,Disabled","Security","Valid"
+"Set-LockScreenRS1","Status","Enabled,Disabled","Security","Valid"
+"Set-LockScreenNetworkConnection","Status","Enabled,Disabled","Security","Valid"
+"Set-LockScreenShutdownMenu","Status","Enabled,Disabled","Security","Valid"
+"Set-StickyKeys","Status","Enabled,Disabled","Explorer","Valid"
+"Set-TaskManagerDetails","Status","Enabled,Disabled","Explorer","Valid"
+"Set-FileOperationsDetails","Status","Enabled,Disabled","Explorer","Valid"
+"Set-FileDeleteConfirm","Status","Enabled,Disabled","Explorer","Valid"
+"Set-PreviousFileVersions","Status","Enabled,Disabled","Explorer","Valid"
+"Set-IncludeInLibrary","Status","Enabled,Disabled","Explorer","Valid"
+"Set-PinToStart","Status","Enabled,Disabled","Explorer","Valid"
+"Set-PinToQuickAccess","Status","Enabled,Disabled","Explorer","Valid"
+"Set-RecentItemsInQuickAccess","Status","Show,Hidden,Removed","Explorer","Valid"
+"Set-FrequentFoldersInQuickAccess","Status","Enabled,Disabled","Explorer","Valid"
+"Set-WindowsContentWhileDragging","Status","Enabled,Disabled","Explorer","Valid"
+"Set-ShareWith","Status","Enabled,Disabled","Explorer","Valid"
+"Set-SendTo","Status","Enabled,Disabled","Explorer","Valid"
+"Set-OpenWithStoreApp","Status","Enabled,Disabled","Explorer","Valid"
+"Set-WinXPowerShell","Status","Enabled,Disabled","Explorer","Valid"
+"Set-BatteryIcon","Status","NewStyle,OldStyle","Explorer","Valid"
+"Set-ClockIcon","Status","NewStyle,OldStyle","Explorer","Valid"
+"Set-VolumeIcon","Status","NewStyle,OldStyle","Explorer","Valid"
+"Set-TaskbarSearchOption","Status","Box,Icon,Hidden","Explorer","Valid"
+"Set-TaskViewButton","Status","Enabled,Disabled","Explorer","Valid"
+"Set-TaskbarIconSize","Status","Small,Large","Explorer","Valid"
+"Set-TaskbarCombineTitles","Status","WhenFull,Never,Always","Explorer","Valid"
+"Set-TaskbarPeopleIcon","Status","Enabled,Disabled","Explorer","Valid"
+"Set-MultiDisplayTaskbar","Status","Enabled,Disabled","Explorer","Valid"
+"Set-TrayIcons","Status","Enabled,Disabled","Explorer","Valid"
+"Set-DisplayTaskbarButtons","Status","All,Open,MainAndOpen","Explorer","Valid"
+"Set-DisplayKnownExtensions","Status","Enabled,Disabled","Explorer","Valid"
+"Set-LastActiveClick","Status","Enabled,Disabled","Explorer","Valid"
+"Set-ShowHiddenSystemFiles","Status","None,Hidden,System","Explorer","Valid"
+"Set-SelectCheckboxes","Status","Enabled,Disabled","Explorer","Valid"
+"Set-ShowSyncNotifications","Status","Enabled,Disabled","Explorer","Valid"
+"Set-ShowRecentShortcuts","Status","Enabled,Disabled","Explorer","Valid"
+"Set-SetExplorerDefaultView","Status","ThisPC,QuickAccess","Explorer","Valid"
+"Set-ThisPCIconOnDesktop","Status","Enabled,Disabled","Explorer","Valid"
+"Set-ShowUserFolderOnDesktop","Status","Enabled,Disabled","Explorer","Valid"
+"Set-DesktopInThisPC","Status","Enabled,Disabled","Explorer","Valid"
+"Set-DesktopIconInExplorer","Status","Enabled,Disabled","Explorer","Valid"
+"Set-DocumentsIconInExplorer","Status","Enabled,Disabled","Explorer","Valid"
+"Set-DocumentsIconInThisPC","Status","Enabled,Disabled","Explorer","Valid"
+"Set-DownloadsIconInThisPC","Status","Enabled,Disabled","Explorer","Valid"
+"Set-DownloadsIconInExplorer","Status","Enabled,Disabled","Explorer","Valid"
+"Set-MusicIconInThisPC","Status","Enabled,Disabled","Explorer","Valid"
+"Set-MusicIconInExplorer","Status","Enabled,Disabled","Explorer","Valid"
+"Set-PicturesIconInThisPC","Status","Enabled,Disabled","Explorer","Valid"
+"Set-PicturesIconInExplorer","Status","Enabled,Disabled","Explorer","Valid"
+"Set-VideosIconInThisPC","Status","Enabled,Disabled","Explorer","Valid"
+"Set-VideosIconInExplorer","Status","Enabled,Disabled","Explorer","Valid"
+"Set-3DObjectsInThisPC","Status","Enabled,Disabled","Explorer","Valid"
+"Set-3DObjectsInExplorer","Status","Enabled,Disabled","Explorer","Valid"
+"Set-NetworkOnDesktop","Status","Enabled,Disabled","Explorer","Valid"
+"Set-RecycleBinOnDesktop","Status","Enabled,Disabled","Explorer","Valid"
+"Set-UsersFolderOnDesktop","Status","Enabled,Disabled","Explorer","Valid"
+"Set-ControlPanelOnDesktop","Status","Enabled,Disabled","Explorer","Valid"
+"Set-MostUsedAppsInStartMenu","Status","Enabled,Disabled","Explorer","Valid"
+"Set-RecentItemsInStartMenu","Status","Enabled,Disabled","Explorer","Valid"
+"Set-VisualFX","Status","Performance,Quality","Explorer","Valid"
+"Set-ShowThumbnails","Status","Enabled,Disabled","Explorer","Valid"
+"Set-LocalThumbnailsDB","Status","Enabled,Disabled","Explorer","Valid"
+"Set-NetworkThumbnailsDB","Status","Enabled,Disabled","Explorer","Valid"
+#set desired parameter KeyboardLayout to add or remove!!!,,,,"Comment"
+"Set-KeyboardLayout","Status","Add,Remove","OS","Valid"
+"Set-Numlock","Status","Enabled,Disabled","OS","Valid"
+"Set-OneDriveStartUp","Status","Enabled,Disabled","OS","Valid"
+"Set-OneDriveProvisioning","Status","Enabled,Disabled","OS","Valid"
+"Set-ProvisionedPackages","Status","Enabled,Disabled","BloatWare","Valid"
+"Set-Provisioned3PartyPackages","Status","Enabled,Disabled","BloatWare","Valid"
+"Set-WindowsStoreProvisioning","Status","Enabled,Disabled","BloatWare","Valid"
+"Set-ConsumerApps","Status","Enabled,Disabled","BloatWare","Valid"
+"Set-XboxFeature","Status","Enabled,Disabled","BloatWare","Valid"
+"Set-AdobeFlash","Status","Enabled,Disabled","Browser","Valid"
+"Set-WindowsFeature","Status","Enabled,Disabled","Feature","Valid"
+"Set-MediaPlayerFeature","Status","Enabled,Disabled","Feature","Valid"
+"Set-PDFprinter","Status","Enabled,Disabled","Feature","Valid"
+"Set-Faxprinter","Status","Enabled,Disabled","Feature","Valid"
+"Set-XPSprinter","Status","Enabled,Disabled","Feature","Valid"
+"Set-InternetExplorerFeature","Status","Enabled,Disabled","Feature","Valid"
+"Set-WorkFoldersFeature","Status","Enabled,Disabled","Feature","Valid"
+"Set-LinuxSubsystemFeature","Status","Enabled,Disabled","Feature","Valid"
+"Set-HyperVFeature","Status","Enabled,Disabled","Feature","Valid"
+"Set-EdgeShortcutCreation","Status","Enabled,Disabled","Browser","Valid"
+"Set-PhotoViewerAssociation","Status","Enabled,Disabled","OS","Valid"
+"Set-PhotoViewerOpenWith","Status","Enabled,Disabled","OS","Valid"
+"Set-SearchAppInStore","Status","Enabled,Disabled","Feature","Valid"
+"Set-NewAppPrompt","Status","Enabled,Disabled","Explorer","Valid"
+"Set-ControlPanelView","Status","Category,Large,Small","Explorer","Valid"
+"Set-DEP","Status","OptOut,OptIn","Security","Valid"
+"Set-ServerManagerOnLogin","Status","Enabled,Disabled","Server","Valid"
+"Set-ShutdownTracker","Status","Enabled,Disabled","Server","Valid"
+#set required values in function PasswordPolicy parameter set!!!,,,,"Comment"
+"Set-PasswordPolicy","","","Security","Valid"
+"Set-CtrlAltDelLogin","Status","Enabled,Disabled","Security","Valid"
+"Set-IEEnhancedSecurity","Status","Enabled,Disabled","Security","Valid"
+"Set-Audio","Status","Enabled,Disabled","OS","Valid"
 "@ | ConvertFrom-Csv -Delimiter "," -Header $TweakHdr
 
 #Script Functions
@@ -236,7 +261,7 @@ ForEach ($Tweak in $Tweaks){
 	$objTweak = $Tweaks | ?{($_.Tweak -eq $Tweak.Tweak)}
 	if ( $objTweak ) {
 		if ( $objTweak.Parameter -eq $Tweak.Parameter ){
-			if ( $objTweak.ParameterOption -contains $Tweak.ParameterOption ){ $Validation = "Valid" }
+			if ( $objTweak.ParameterOption -contains $Tweak.ParameterOption ){ $Validation = $objTweak.Validation }
 			else { $Validation = "Invalid ParameterOption" }
 			}
 		else { $Validation = "Wrong Parameter" }
@@ -467,7 +492,7 @@ try{
 		}
 	}
 catch { Out-put "could not set $($Description) to $($Status)" }
-}
+}#Set-ActivityHistory
 
 Function Set-StartSuggestions {
 param(
@@ -525,12 +550,11 @@ try{
 catch { Out-put "could not set $($Description) to $($Status)" }
 }#Set-BackgroundApps
 
-# Set LockScreen Advertising
 Function Set-LockScreenSpotlight {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
 )
-$Description = "Background application access policy"
+$Description = "Advertising spots on lockscreen"
 $RegPaths = @("HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager")
 $RegKeys = @(
 "RotatingLockScreenEnabled",
@@ -641,7 +665,7 @@ RegVal = $RegVal
 RemoveRegKey = $RemoveRegKey
 }
 Set-SingleRegKey @SingleRegKeyProps
-}
+}#Set-TailoredExperiences
 
 Function Set-AdvertisingID {
 param(
@@ -674,7 +698,7 @@ switch ($Status){
 	}
 $SingleRegKeyProps =@{
 Status = $Status
-Description = "Advertising ID"
+Description = "App access to Web Langage list"
 RegPath = "HKCU:\Control Panel\International\User Profile"
 RegKey = "HttpAcceptLanguageOptOut"
 RegType = "Dword"
@@ -682,7 +706,7 @@ RegVal = $RegVal
 RemoveRegKey = $RemoveRegKey
 }
 Set-SingleRegKey @SingleRegKeyProps
-}
+}#Set-WebLangList
 
 Function Set-Cortana {
 param(
@@ -777,6 +801,26 @@ try {
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-P2PUpdate
 
+Function Set-CastToDevice {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+switch ($Status){
+	"Enabled"{ $RemoveRegKey = $True }
+	"Disabled" { $RegVal = "" }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Cast to Device Context menu"
+RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked"
+RegKey = "{7AD84985-87B4-4a16-BE58-8B72A5B390F7}"
+RegType = "String"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-CastToDevice
+
 Function Set-AutoLogger {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
@@ -848,7 +892,6 @@ catch { Out-put "could not set $($Description) to $($Status)"}
 
 ########### Service Tweaks ##########
 
-# Lower UAC level (disabling it completely would break apps)
 Function Set-UAClevel {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Low","High")]$Status
@@ -948,7 +991,7 @@ try {
 		}
 	}
 catch { Out-put "could not set $($Description) to $($Status)"}
-}
+}#Set-SmbServer
 
 Function Set-LLMNR {
 param(
@@ -968,7 +1011,7 @@ RegVal = $RegVal
 RemoveRegKey = $RemoveRegKey
 }
 Set-SingleRegKey @SingleRegKeyProps
-}
+}#Set-LLMNR
 
 Function Set-CurrentNetworkProfile {
 param(
@@ -1018,13 +1061,13 @@ RegVal = $RegVal
 RemoveRegKey = $RemoveRegKey
 }
 Set-SingleRegKey @SingleRegKeyProps
-}
+}#Set-NetDevicesAutoInst
 
-# Controlled Folder Access (Defender Exploit Guard feature) - Not applicable to Server
 Function Set-FolderAccessControl {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
 )
+$Help = "Controlled Folder Access (Defender Exploit Guard feature) - Not applicable to Server"
 $Description = "Controlled Folder Access"
 Out-put "setting $($Description) to $($Status)"
 try { Set-MpPreference -EnableControlledFolderAccess $Status }
@@ -1129,7 +1172,6 @@ try { bcdedit /set `{current`} bootmenupolicy $Status | Out-Null }
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-F8BootMenu
 
-# Set Data Execution Prevention (DEP) policy to OptOut
 Function Set-DEPOption {
 param(
 [ValidateSet("OpIn","OptOut")]$Status
@@ -1137,7 +1179,7 @@ param(
 $Description = "Data Execution Prevention"
 bcdedit /set `{current`} nx $Status | Out-Null
 Out-put "setting $($Description) to $($Status)"
-}
+}#Set-DEPOption
 
 Function Set-CIMemoryIntegrity {
 param(
@@ -1161,15 +1203,17 @@ if ([System.Environment]::OSVersion.Version.Build -lt 17134) {
 	Out-Put "$($SingleRegKeyProps["Description"]) not supported on current OS version"
 	}
 else { Set-SingleRegKey @SingleRegKeyProps }
-}
+}#Set-CIMemoryIntegrity
 
-# Enable strong cryptography for .NET Framework (version 4 and above)
-# https://stackoverflow.com/questions/36265534/invoke-webrequest-ssl-fails
 Function Set-DotNetStrongCrypto {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
 )
 $Description = ".NET strong cryptography"
+$Help = @"
+Enable strong cryptography for .NET Framework (version 4 and above)
+https://stackoverflow.com/questions/36265534/invoke-webrequest-ssl-fails
+"@
 $RegPaths = @("HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319","HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319")
 $RegKeys = @( "SchUseStrongCrypto" )
 Out-put "setting $($Description) to $($Status)"
@@ -1206,12 +1250,8 @@ RegVal = $RegVal
 RemoveRegKey = $RemoveRegKey
 }
 Set-SingleRegKey @SingleRegKeyProps
-}
+}#Set-ScriptHost
 
-# Enable Meltdown (CVE-2017-5754) compatibility flag - Required for January 2018 and all subsequent Windows updates
-# This flag is normally automatically enabled by compatible antivirus software (such as Windows Defender).
-# Use the tweak only if you have confirmed that your AV is compatible but unable to set the flag automatically or if you don't use any AV at all.
-# See https://support.microsoft.com/en-us/help/4072699/january-3-2018-windows-security-updates-and-antivirus-software for details.
 Function Set-MeltdownCompatFlag {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
@@ -1220,6 +1260,13 @@ switch ($Status){
 	"Disabled"{ $RemoveRegKey = $True }
 	"Enabled" { $RegVal = 0 }
 	}
+$Help = @"
+Enable Meltdown (CVE-2017-5754) compatibility flag - Required for January 2018 and all subsequent Windows updates
+This flag is normally automatically enabled by compatible antivirus software (such as Windows Defender).
+Use the tweak only if you have confirmed that your AV is compatible but unable to set the flag automatically or if you don't use any AV at all.
+
+For details see: https://support.microsoft.com/en-us/help/4072699/january-3-2018-windows-security-updates-and-antivirus-software
+"@
 $SingleRegKeyProps =@{
 Status = $Status
 Description = "Meltdown (CVE-2017-5754) compatibility flag"
@@ -1230,7 +1277,7 @@ RegVal = $RegVal
 RemoveRegKey = $RemoveRegKey
 }
 Set-SingleRegKey @SingleRegKeyProps
-}
+}#Set-MeltdownCompatFlag
 
 Function Set-UpdateMSRT {
 param(
@@ -1252,12 +1299,11 @@ RemoveRegKey = $RemoveRegKey
 Set-SingleRegKey @SingleRegKeyProps
 }#Set-UpdateMSRT
 
-# Disable offering of drivers through Windows Update
 Function Set-UpdateDrivers {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
 )
-$Description = "Windows Update Drivers"
+$Description = "Drivers via Windows Update"
 $RegPaths = @(
 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching",
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate",
@@ -1295,6 +1341,39 @@ try {
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-UpdateDrivers
 
+Function Set-WindowsUpdateAlert {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+$Description = "Allow FullScreen Windows Update Alert Overlay"
+$WUSAlertFiles = @(
+"$Env:windir\System32\musnotification.exe",
+"$Env:windir\System32\musnotificationux.exe"
+)
+try {
+	switch ($Status){
+		"Enabled" {
+			$owner = New-Object System.Security.Principal.NTAccount("NT SERVICE\TrustedInstaller")
+			ForEach($File In $WUSAlertFiles){
+				ICACLS $File /remove:d '"everyone"' | out-null
+				ICACLS $File /grant ("Everyone" + ':(OI)(CI)F') | out-null
+				$acl = get-acl $File
+				$acl.SetOwner($owner) | out-null
+				set-acl $File $acl | out-null
+				ICACLS $File /remove:g '"everyone"' | out-null
+				}
+			}
+		"Disabled" {
+			ForEach($File In $WUSAlertFiles){
+				takeown /f $File | out-null
+				ICACLS $File /deny '"everyone":(F)' | out-null
+				}
+			}
+		}
+	}
+catch { Out-put "could not set $($Description) to $($Status)"}
+}#Set-WindowsUpdateAlert
+
 Function Set-UpdateRestart {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
@@ -1322,11 +1401,11 @@ try {
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-UpdateRestart
 
-# Stop and disable Home Groups services - Not applicable to Server
 Function Set-HomeGroupServices {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
 )
+$Help = "Stop and disable Home Groups services - Not applicable to Server"
 $Description = "Home Group Services"
 $Services = @(
 "HomeGroupListener",
@@ -1508,11 +1587,11 @@ try {
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-Defragmentation
 
-# Set Superfetch service - Not applicable to Server
 Function Set-SuperFetch {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
 )
+$Help ="Set Superfetch service - Not applicable to Server"
 $Description = "SuperFetching"
 $Services = @( "SysMain" )
 Out-put "setting $($Description) to $($Status)"
@@ -1576,20 +1655,22 @@ RemoveRegKey = $RemoveRegKey
 Set-SingleRegKey @SingleRegKeyProps
 }#Set-BIOSTimeZone
 
-# Enable Hibernation
-# Do not use on Server if Hyper-V service set to Automatic
-# it may lead to BSODs (Win10 with Hyper-V is fine)
 Function Set-Hibernation {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
 )
 $Description = "Hibernation"
+$Help= @"
+Enable Hibernation
+Do not use on Server if Hyper-V service set to Automatic
+it may lead to BSODs (Win10 with Hyper-V is fine)
+"@
 $RegPaths = @(
 "HKLM:\System\CurrentControlSet\Control\Session Manager\Power",
 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings"
 )
 $RegKeys = @(
-"HibernteEnabled",
+"HibernateEnabled",
 "ShowHibernateOption"
 )
 Out-put "setting $($Description) to $($Status)"
@@ -1605,7 +1686,6 @@ try {
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-Hibernation
 
-# Disable Sleep start menu and keyboard button
 Function Set-SleepButton {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
@@ -1625,14 +1705,13 @@ try {
 	powercfg /SETDCVALUEINDEX SCHEME_CURRENT SUB_BUTTONS SBUTTONACTION $RegVal
 	}
 catch { Out-put "could not set $($Description) to $($Status)"}
-}
+}#Set-SleepButton
 
-# Disable display and sleep mode timeouts
 Function Set-SleepTimeout {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
 )
-$Description = "Sleep Time Out"
+$Description = "Display Sleep Time Out"
 Out-put "setting $($Description) to $($Status)"
 try {
 	switch ($Status){
@@ -1651,7 +1730,7 @@ try {
 		}
 	}
 catch { Out-put "could not set $($Description) to $($Status)"}
-}
+}#Set-SleepTimeout
 
 Function Set-FastStartUp {
 param(
@@ -1705,11 +1784,11 @@ try {
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-ActionCenter
 
-# Hide Account Protection warning in Defender about not using a Microsoft account
 Function Set-AccountProtectionWarning {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
 )
+# Hide Account Protection warning in Defender about not using a Microsoft account
 switch ($Status){
 	"Disabled"{ $RegVal = 1 }
 	"Enabled" { $RemoveRegKey = $true }
@@ -1724,7 +1803,7 @@ RegVal = $RegVal
 RemoveRegKey = $RemoveRegKey
 }
 Set-SingleRegKey @SingleRegKeyProps
-}
+}#Set-AccountProtectionWarning
 
 Function Set-LockScreen {
 param(
@@ -1911,6 +1990,360 @@ RemoveRegKey = $RemoveRegKey
 Set-SingleRegKey @SingleRegKeyProps
 }#Set-FileDeleteConfirm
 
+Function Set-PreviousFileVersions {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+$Description = "ShadowCopy of previous folder/file versions"
+$RegPaths = @( 
+"HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+"HKCR:\CLSID\{450D8FBA-AD25-11D0-98A8-0800361B1103}\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+"HKCR:\Directory\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}",
+"HKCR:\Drive\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}"
+)
+Out-put "setting $($Description) to $($Status)"
+try {
+	switch ($Status){
+		"Disabled"{ foreach ( $RegPath in $RegPaths ) { Remove-Item -Path $RegPath -Recurse -Force } }
+		"Enabled" { foreach ( $RegPath in $RegPaths ) { New-Item -Path $RegPath -Force } }
+		}
+	}
+catch { Out-put "could not set $($Description) to $($Status)"}
+}#Set-PreviousFileVersions
+
+Function Set-IncludeInLibrary {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+switch ($Status){
+	"Enabled" { $RegVal = "" }
+	"Disabled" { $RegVal = "{3dad6c5d-2167-4cae-9914-f99e41c12cfa}" }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Include In Library"
+RegPath = "HKCR:\Folder\ShellEx\ContextMenuHandlers\Library Location"
+RegKey = "(Default)"
+RegType = "String"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+}#Set-IncludeInLibrary
+
+Function Set-PinToStart {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+$Description = "Pin items to Start Menu"
+$RegPaths = @(
+"HKCR:\*\shellex\ContextMenuHandlers\{90AA3A4E-1CBA-4233-B8BB-535773D48449}",
+"HKCR:\*\shellex\ContextMenuHandlers\{a2a9545d-a0c2-42b4-9708-a0b2badd77c8}",
+"HKCR:\Folder\shellex\ContextMenuHandlers\PintoStartScreen",
+"HKCR:\exefile\shellex\ContextMenuHandlers\PintoStartScreen",
+"HKCR:\Microsoft.Website\shellex\ContextMenuHandlers\PintoStartScreen",
+"HKCR:\mscfile\shellex\ContextMenuHandlers\PintoStartScreen"
+)
+$RegKeys = @( "(Default)" )
+$RegVals = @(
+"Taskband Pin",
+"Start Menu Pin",
+"{470C0EBD-5D73-4d58-9CED-E91E22E23282}"
+)
+Out-put "setting $($Description) to $($Status)"
+try {
+	switch ($Status){
+		"Enabled"{
+			New-Item -Path $RegPaths[0] -Force
+			Set-ItemProperty -LiteralPath $RegPaths[0] -Name $RegKeys[0] -Value $RegVals[0] -Type String
+			New-Item -Path $RegPaths[1] -Force
+			Set-ItemProperty -LiteralPath $RegPaths[1] -Name $RegKeys[0] -Value $RegVals[1] -Type String
+			foreach ( $RegPath in $RegPaths[2..5]) {
+				Set-ItemProperty -LiteralPath $RegPath -Name $RegKeys[0] -Value $RegVals[2] -Type String
+				}
+			}
+		"Disabled"{
+			Remove-Item -LiteralPath $RegPaths[0] -Force
+			Remove-Item -LiteralPath $RegPaths[1] -Force
+			foreach ( $RegPath in $RegPaths[2..5]) {
+				Set-ItemProperty -LiteralPath $RegPath -Name $RegKeys[0] -Value "" -Type String
+				}
+			}
+		}
+	}
+catch { Out-put "could not set $($Description) to $($Status)"}
+}#Set-PinToStart
+
+Function Set-PinToQuickAccess {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+$Description = "Pin items to Quick Access folder"
+$RegPaths = @(
+"HKCR:\Folder\shell\pintohome",
+"HKCR:\Folder\shell\pintohome\command",
+"HKLM:\SOFTWARE\Classes\Folder\shell\pintohome",
+"HKLM:\SOFTWARE\Classes\Folder\shell\pintohome\command"
+)
+$RegKeys = @(
+"MUIVerb",
+"AppliesTo",
+"DelegateExecute"
+)
+$RegVals = @(
+"@shell32.dll,-51377",
+'System.ParsingName:<>"::{679f85cb-0220-4080-b29b-5540cc05aab6}" AND System.ParsingName:<>"::{645FF040-5081-101B-9F08-00AA002F954E}" AND System.IsFolder:=System.StructuredQueryType.Boolean#True',
+"{b455f46e-e4af-4035-b0a4-cf18d2f6f28e}"
+)
+Out-put "setting $($Description) to $($Status)"
+try {
+	switch ($Status){
+		"Enabled"{
+			if (-not (Test-Path $RegPaths[0])){New-Item -Path $RegPaths[0] -Force}
+			New-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVals[0]
+			New-ItemProperty -Path $RegPaths[0] -Name $RegKeys[1] -Value $RegVals[1]
+			if (-not (Test-Path $RegPaths[1])){New-Item -Path $RegPaths[1] -Force}
+			New-ItemProperty -Path $RegPaths[0] -Name $RegKeys[2] -Value $RegVals[2]
+			if (-not (Test-Path $RegPaths[2])){New-Item -Path $RegPaths[2] -Force}
+			New-ItemProperty -Path $RegPaths[2] -Name $RegKeys[0] -Value $RegVals[0]
+			New-ItemProperty -Path $RegPaths[2] -Name $RegKeys[1] -Value $RegVals[1]
+			if (-not (Test-Path $RegPaths[3])){New-Item -Path $RegPaths[3] -Force}
+			New-ItemProperty -Path $RegPaths[3] -Name $RegKeys[2] -Value $RegVals[2]
+			}
+		"Disabled"{
+			Remove-Item -LiteralPath $RegPaths[0] -Recurse -Force
+			Remove-Item -LiteralPath $RegPaths[1] -Recurse -Force
+			}
+		}
+	}
+catch { Out-put "could not set $($Description) to $($Status)"}
+}#Set-PinToQuickAccess
+
+Function Set-RecentItemsInQuickAccess {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Show","Hidden","Removed")]$Status
+)
+$Description = "Recent items in Quick Access"
+$RegPaths = @(
+"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer",
+"HKLM:\$Path\HomeFolderDesktop\NameSpace\DelegateFolders\{3134ef9c-6b18-4996-ad04-ed5912e00eb5}",
+"HKLM:\SOFTWARE\Wow6432Node\$Path\HomeFolderDesktop\NameSpace\DelegateFolders\{3134ef9c-6b18-4996-ad04-ed5912e00eb5}"
+)
+$RegKeys = @(
+"(Default)"
+"ShowRecent"
+)
+$RegVals = @(
+"Recent Items Instance Folder"
+)
+Out-put "setting $($Description) to $($Status)"
+try {
+	switch ($Status){
+		"Show"{
+			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[1] -Value 1 -Type DWord
+			Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVals[0] -Type String			
+			Set-ItemProperty -Path $RegPaths[2] -Name $RegKeys[0] -Value $RegVals[0] -Type String
+			}
+		"Hidden"{
+			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[1] -Value 0 -Type DWord
+			}
+		"Removed"{
+			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[1] -Value 0 -Type DWord
+			Remove-Item -Path $RegPaths[1] -Recurse -Force
+			Remove-Item -Path $RegPaths[2] -Recurse -Force
+			}
+		}
+	}
+catch { Out-put "could not set $($Description) to $($Status)"}
+}#Set-RecentItemsInQuickAccess
+
+Function Set-FrequentFoldersInQuickAccess {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+switch ($Status){
+	"Enabled" { $Regval = 1 }
+	"Disabled" { $RegVal = 0 }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Frequent folders in Quick Access"
+RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"
+RegKey = "ShowFrequent"
+RegType = "DWord"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-FrequentFoldersInQuickAccess
+
+Function Set-WindowsContentWhileDragging {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+switch ($Status){
+	"Enabled" { $Regval = 1 }
+	"Disabled" { $RegVal = 0 }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Show windows content while dragging"
+RegPath = "HKCU:\Control Panel\Desktop"
+RegKey = "DragFullWindows"
+RegType = "DWord"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-WindowsContentWhileDragging
+
+Function Set-ShareWith {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+$Description = "Share items context menu"
+$RegPaths = @(
+"HKCR:\*\shellex\ContextMenuHandlers\Sharing",
+"HKCR:\Directory\shellex\ContextMenuHandlers\Sharing",
+"HKCR:\Directory\shellex\CopyHookHandlers\Sharing",
+"HKCR:\Directory\shellex\PropertySheetHandlers\Sharing",
+"HKCR:\Directory\Background\shellex\ContextMenuHandlers\Sharing",
+"HKCR:\Drive\shellex\ContextMenuHandlers\Sharing",
+"HKCR:\LibraryFolder\background\shellex\ContextMenuHandlers\Sharing"
+)
+$RegKey = "(Default)"
+Out-put "setting $($Description) to $($Status)"
+try {
+	switch ($Status){
+		"Enabled" { $RegVal = "{f81e9010-6ea4-11ce-a7ff-00aa003ca9f6}" }
+		"Disabled" { $RegVal = "" }
+		}
+	foreach ( $RegPath in $RegPaths ) {
+		Set-ItemProperty -Path $RegPath -Name $RegKey -Value $RegVal -Type String
+		}
+	}
+catch { Out-put "could not set $($Description) to $($Status)"}
+}#Set-ShareWith
+
+Function Set-SendTo {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+switch ($Status){
+	"Enabled"{ $RegVal = "{7BA4C740-9E81-11CF-99D3-00AA004AE837}" }
+	"Disabled" { $RemoveRegKey = $True }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "SendTo Context Menu"
+RegPath = "HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo"
+RegKey = "(Default)"
+RegType = "String"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-SendTo
+
+Function Set-OpenWithStoreApp {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+switch ($Status){
+	"Enabled"{ $RemoveRegKey = $True }
+	"Disabled" { $RegVal = 1 }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Search StoreApp for unknonw extension"
+RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
+RegKey = "NoUseStoreOpenWith"
+RegType = "DWord"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-OpenWithStoreApp
+
+Function Set-WinXPowerShell {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+switch ($Status){
+	"Enabled"{ $RegVal = 0 }
+	"Disabled" { $RegVal = 1 }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Replace Command with PowerShell in WinX menu"
+RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+RegKey = "DontUsePowerShellOnWinX"
+RegType = "DWord"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-WinXPowerShell
+
+Function Set-BatteryIcon {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("NewStyle","OldStyle")]$Status
+)
+switch ($Status){
+	"OldStyle"{ $RegVal = 1 }
+	"NewStyle" { $RemoveRegKey = $True }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Battery icon in Systray"
+RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell"
+RegKey = "UseWin32BatteryFlyout"
+RegType = "DWord"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-BatteryIcon
+
+Function Set-ClockIcon {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("NewStyle","OldStyle")]$Status
+)
+switch ($Status){
+	"OldStyle"{ $RegVal = 1 }
+	"NewStyle" { $RemoveRegKey = $True }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Clock icon in Systray"
+RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell"
+RegKey = "UseWin32TrayClockExperience"
+RegType = "DWord"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-ClockIcon
+
+Function Set-VolumeIcon {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("NewStyle","OldStyle")]$Status
+)
+switch ($Status){
+	"OldStyle"{ $RegVal = 0 }
+	"NewStyle" { $RemoveRegKey = $True }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Volume icon in Systray"
+RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\MTCUVC"
+RegKey = "EnableMtcUvc"
+RegType = "DWord"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-VolumeIcon
+
 Function Set-TaskbarSearchOption {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Box","Icon","Hidden")]$Status
@@ -1962,7 +2395,7 @@ switch ($Status){
 	}
 $SingleRegKeyProps =@{
 Status = $Status
-Description = "Small Icons on Taskbar"
+Description = "Icon size on Taskbar"
 RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
 RegKey = "TaskbarSmallIcons"
 RegType = "DWord"
@@ -1976,7 +2409,7 @@ Function Set-TaskbarCombineTitles {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("WhenFull","Never","Always")]$Status
 )
-$Description = "Show Taskbar Titles"
+$Description = "Group Taskbar Titles"
 $RegPaths = @( "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" )
 $RegKeys = @(
 "TaskbarGlomLevel",
@@ -2022,6 +2455,47 @@ RemoveRegKey = $RemoveRegKey
 Set-SingleRegKey @SingleRegKeyProps
 }#Set-TaskbarPeopleIcon
 
+Function Set-MultiDisplayTaskbar {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+switch ($Status){
+	"Disabled"{ $RegVal = 0 }
+	"Enabled" { $RegVal = 1 }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Display Taskbar on all monitors"
+RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+RegKey = "MMTaskbarEnabled"
+RegType = "Dword"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-MultiDisplayTaskbar
+
+Function Set-DisplayTaskbarButtons {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("All","Open","MainAndOpen")]$Status
+)
+switch ($Status){
+	"Open"{ $RegVal = 2 }
+	"MainAndOpen" { $RegVal = 1 }
+	"All" { $RegVal = 0 }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Show Taskbar Button for program(s) on Display: "
+RegPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+RegKey = "MMTaskbarMode"
+RegType = "DWord"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-TaskbarSearchOption
+
 Function Set-TrayIcons {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
@@ -2041,6 +2515,46 @@ RemoveRegKey = $RemoveRegKey
 }
 Set-SingleRegKey @SingleRegKeyProps
 }#Set-TrayIcons
+
+Function Set-SecondHandInClock {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+switch ($Status){
+	"Disabled"{ $RegVal = 0 }
+	"Enabled" { $RegVal = 1 }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Display Seconds in Clock Face"
+RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+RegKey = "ShowSecondsInSystemClock"
+RegType = "Dword"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-SecondHandInClock
+
+Function Set-LastActiveClick {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+switch ($Status){
+	"Disabled"{ $RegVal = 0 }
+	"Enabled" { $RegVal = 1 }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Last Active Click"
+RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+RegKey = "LastActiveClick"
+RegType = "Dword"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-LastActiveClick
 
 Function Set-DisplayKnownExtensions {
 param(
@@ -2062,25 +2576,28 @@ RemoveRegKey = $RemoveRegKey
 Set-SingleRegKey @SingleRegKeyProps
 }#Set-DisplayKnownExtensions
 
-Function Set-ShowHiddenFiles {
+Function Set-ShowHiddenSystemFiles {
 param(
-[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+[Parameter(Mandatory = $True)][ValidateSet("None","Hidden","System")]$Status
+)
+$Description = "Show hidden system files"
+$RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+$RegKeys = @(
+"Hidden",
+"SuperHidden"
 )
 switch ($Status){
-	"Disabled"{ $RegVal = 2 }
-	"Enabled" { $RegVal = 1 }
+	"None" { 
+		Set-ItemProperty -Path $RegPath -Name $RegKeys[0] -Value 2 -Type DWord
+		Set-ItemProperty -Path $RegPath -Name $RegKeys[1] -Value 0 -Type DWord
+		}
+	"Hidden"{ 
+		Set-ItemProperty -Path $RegPath -Name $RegKeys[0] -Value 1 -Type DWord
+		Set-ItemProperty -Path $RegPath -Name $RegKeys[1] -Value 0 -Type DWord
+		}
+	"System" { Set-ItemProperty -Path $RegPath -Name $RegKeys[0] -Value 1 -Type DWord }
 	}
-$SingleRegKeyProps =@{
-Status = $Status
-Description = "Display of hidden files"
-RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-RegKey = "Hidden"
-RegType = "Dword"
-RegVal = $RegVal
-RemoveRegKey = $RemoveRegKey
-}
-Set-SingleRegKey @SingleRegKeyProps
-}#Set-ShowHiddenFiles
+}#Set-ShowHiddenSystemFiles
 
 # Hide item selection checkboxes
 Function Set-SelectCheckboxes {
@@ -2093,7 +2610,7 @@ switch ($Status){
 	}
 $SingleRegKeyProps =@{
 Status = $Status
-Description = "Display of hidden files"
+Description = "Display checkboxes next to files"
 RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
 RegKey = "AutoCheckSelect"
 RegType = "Dword"
@@ -2101,7 +2618,7 @@ RegVal = $RegVal
 RemoveRegKey = $RemoveRegKey
 }
 Set-SingleRegKey @SingleRegKeyProps
-}
+}#Set-SelectCheckboxes
 
 Function Set-ShowSyncNotifications {
 param(
@@ -2254,11 +2771,11 @@ try {
 		"Enabled" { $RegVal = "Show" }
 		"Disabled" { $RegVal = "Hide" }
 		}
-	Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value "Hide"
-	Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value "Hide"
+	Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value "Hide" -Type String
+	Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value "Hide" -Type String
 	}
 catch { Out-put "could not set $($Description) to $($Status)"}
-}
+}#Set-DesktopIconInExplorer
 
 Function Set-DocumentsIconInExplorer {
 param(
@@ -2275,8 +2792,8 @@ try {
 		"Enabled" { $RegVal = "Show" }
 		"Disabled" { $RegVal = "Hide" }
 		}
-	Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVal
-	Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVal
+	Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVal -Type String
+	Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVal -Type String
 	}
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-DocumentsIconInExplorer
@@ -2341,8 +2858,8 @@ try {
 		"Enabled" { $RegVal = "Show" }
 		"Disabled" { $RegVal = "Hide" }
 		}
-	Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVal
-	Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVal
+	Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVal -Type String
+	Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVal -Type String
 	}
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-DownloadsIconInExplorer
@@ -2377,8 +2894,8 @@ try {
 		"Enabled" { $RegVal = "Show" }
 		"Disabled" { $RegVal = "Hide" }
 		}
-	Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVal
-	Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVal
+	Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVal -Type String
+	Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVal -Type String
 	}
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-MusicIconInExplorer
@@ -2410,7 +2927,7 @@ Function Set-PicturesIconInExplorer {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
 )
-$Description = "Downloads Icon in Explorer"
+$Description = "Pictures Icon in Explorer"
 $RegPaths = @( "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag", "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag" )
 $RegKeys = @( "ThisPCPolicy" )
 Out-put "setting $($Description) to $($Status)"
@@ -2419,8 +2936,8 @@ try {
 		"Enabled" { $RegVal = "Show" }
 		"Disabled" { $RegVal = "Hide" }
 		}
-	Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVal
-	Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVal
+	Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVal -Type String
+	Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVal -Type String
 	}
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-PicturesIconInExplorer
@@ -2444,7 +2961,7 @@ Function Set-VideosIconInExplorer {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
 )
-$Description = "Downloads Icon in Explorer"
+$Description = "Videos Icon in Explorer"
 $RegPaths = @( "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag", "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag" )
 $RegKeys = @( "ThisPCPolicy" )
 Out-put "setting $($Description) to $($Status)"
@@ -2453,8 +2970,8 @@ try {
 		"Enabled" { $RegVal = "Show" }
 		"Disabled" { $RegVal = "Hide" }
 		}
-	Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVal
-	Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVal
+	Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVal -Type String
+	Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVal -Type String
 	}
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-VideosIconInExplorer
@@ -2491,20 +3008,156 @@ try {
 			}
 		"Disabled" {
 			If (!(Test-Path $RegPaths[0] )) { New-Item -Path $RegPaths[0] }
-			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVal
+			Set-ItemProperty -Path $RegPaths[0] -Name $RegKeys[0] -Value $RegVal  -Type String
 			If (!(Test-Path $RegPaths[1] )) { New-Item -Path $RegPaths[1] }
-			Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVal
+			Set-ItemProperty -Path $RegPaths[1] -Name $RegKeys[0] -Value $RegVal -Type String
 			}
 		}
 	}
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-3DObjectsInExplorer
 
-#-PerFormace disables animations, transparency etc. but leaves font smoothing and miniatures enabled
+Function Set-NetworkOnDesktop {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+$Description = "Network Icon on Desktop"
+$RegPaths = @(
+"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",
+"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel"
+)
+$RegKey = "{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}"
+Out-put "setting $($Description) to $($Status)"
+try {
+	switch ($Status){
+		"Enabled" { $RegVal = 0 }
+		"Disabled" { $RegVal = 1 }
+		}
+	Foreach ( $RegPath in $RegPaths ){
+		If (!(Test-Path $RegPath )) { New-Item -Path $RegPath }
+		Set-ItemProperty -Path $RegPath -Name $RegKey -Value $RegVal -Type DWord
+		}
+	}
+catch { Out-put "could not set $($Description) to $($Status)"}
+}#Set-NetworkOnDesktop
+
+Function Set-RecycleBinOnDesktop {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+$Description = "RecycleBin Icon on Desktop"
+$RegPaths = @(
+"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",
+"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel"
+)
+$RegKey = "{645FF040-5081-101B-9F08-00AA002F954E}"
+Out-put "setting $($Description) to $($Status)"
+try {
+	switch ($Status){
+		"Enabled" { $RegVal = 0 }
+		"Disabled" { $RegVal = 1 }
+		}
+	Foreach ( $RegPath in $RegPaths ){
+		If (!(Test-Path $RegPath )) { New-Item -Path $RegPath }
+		Set-ItemProperty -Path $RegPath -Name $RegKey -Value $RegVal -Type DWord
+		}
+	}
+catch { Out-put "could not set $($Description) to $($Status)"}
+}#Set-RecycleBinOnDesktop
+
+Function Set-UsersFolderOnDesktop {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+$Description = "Users Folder Icon on Desktop"
+$RegPaths = @(
+"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",
+"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel"
+)
+$RegKey = "{59031a47-3f72-44a7-89c5-5595fe6b30ee}"
+Out-put "setting $($Description) to $($Status)"
+try {
+	switch ($Status){
+		"Enabled" { $RegVal = 0 }
+		"Disabled" { $RegVal = 1 }
+		}
+	Foreach ( $RegPath in $RegPaths ){
+		If (!(Test-Path $RegPath )) { New-Item -Path $RegPath }
+		Set-ItemProperty -Path $RegPath -Name $RegKey -Value $RegVal -Type DWord
+		}
+	}
+catch { Out-put "could not set $($Description) to $($Status)"}
+}#Set-UsersFolderOnDesktop
+
+Function Set-ControlPanelOnDesktop {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+$Description = "ControlPanel Folder Icon on Desktop"
+$RegPaths = @(
+"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",
+"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel"
+)
+$RegKey = "{5399E694-6CE5-4D6C-8FCE-1D8870FDCBA0}"
+Out-put "setting $($Description) to $($Status)"
+try {
+	switch ($Status){
+		"Enabled" { $RegVal = 0 }
+		"Disabled" { $RegVal = 1 }
+		}
+	Foreach ( $RegPath in $RegPaths ){
+		If (!(Test-Path $RegPath )) { New-Item -Path $RegPath }
+		Set-ItemProperty -Path $RegPath -Name $RegKey -Value $RegVal -Type DWord
+		}
+	}
+catch { Out-put "could not set $($Description) to $($Status)"}
+}#Set-ControlPanelOnDesktop
+
+Function Set-MostUsedAppsInStartMenu {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+switch ($Status){
+	"Disabled"{ $RegVal = 0 }
+	"Enabled" { $RegVal = 1 }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Show most used apps in Start menu"
+RegPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+RegKey = "Start_TrackProgs"
+RegType = "DWord"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-MostUsedAppsInStartMenu
+
+Function Set-RecentItemsInStartMenu {
+param(
+[Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
+)
+switch ($Status){
+	"Disabled"{ $RegVal = 0 }
+	"Enabled" { $RegVal = 1 }
+	}
+$SingleRegKeyProps =@{
+Status = $Status
+Description = "Show recently used items in Start menu"
+RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu"
+RegKey = "Start_TrackDocs"
+RegType = "DWord"
+RegVal = $RegVal
+RemoveRegKey = $RemoveRegKey
+}
+Set-SingleRegKey @SingleRegKeyProps
+}#Set-RecentItemsInStartMenu
+
 Function Set-VisualFX {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Performance","Quality")]$Status
 )
+#-PerFormace disables animations, transparency etc. but leaves font smoothing and miniatures enabled
 $Description = "Visual FX rendering"
 $RegPaths = @(
 "HKCU:\Control Panel\Desktop",
@@ -2723,44 +3376,52 @@ $Description = "Microsoft AppxPackages",
 	"Microsoft.BingSports",
 	"Microsoft.BingWeather",
 	"Microsoft.BingTranslator",
+	"Microsoft.CommsPhone",
+	"Microsoft.ConnectivityStore",
 	"Microsoft.GetHelp",
 	"Microsoft.Getstarted",
 	"Microsoft.Messaging",
 	"Microsoft.Microsoft3DViewer",
 	"Microsoft.MicrosoftOfficeHub",
-	"Microsoft.Office.OneNote",
-	"Microsoft.Office.Sway",
 	"Microsoft.MicrosoftPowerBIForWindows",
 	"Microsoft.MicrosoftSolitaireCollection",
 	"Microsoft.MicrosoftStickyNotes",
+	"Microsoft.MinecraftUWP",
+	"Microsoft.MovieMoment",
+	"Microsoft.MSPaint",
+	"Microsoft.NetworkSpeedTest",
+	"Microsoft.Office.OneNote",
+	"Microsoft.Office.Sway",
+	"Microsoft.OneConnect",
 	"Microsoft.People",
+	"Microsoft.Print3D",
+	"Microsoft.RemoteDesktop",
 	"Microsoft.SkypeApp",
+	"Microsoft.SkypeWiFi",
+	"Microsoft.Wallet",
 	"Microsoft.Windows.Photos",
 	"Microsoft.WindowsAlarms",
 	"Microsoft.WindowsCamera",
 	"Microsoft.windowscommunicationsapps",
-	"Microsoft.Wallet",
+	"Microsoft.WindowsFeedback",
+	"Microsoft.WindowsFeedbackHub",
 	"Microsoft.WindowsMaps",
 	"Microsoft.WindowsPhone",
 	"Microsoft.WindowsSoundRecorder",
 	"Microsoft.ZuneMusic",
-	"Microsoft.ZuneVideo",
-	"Microsoft.AppConnector",
-	"Microsoft.ConnectivityStore",
-	"Microsoft.Messaging",
-	"Microsoft.CommsPhone",
-	"Microsoft.MicrosoftStickyNotes",
-	"Microsoft.OneConnect",
-	"Microsoft.WindowsFeedbackHub",
-	"Microsoft.MinecraftUWP",
-	"Microsoft.MicrosoftPowerBIForWindows",
-	"Microsoft.NetworkSpeedTest",
-	"Microsoft.MSPaint",
-	"Microsoft.Microsoft3DViewer",
-	"Microsoft.RemoteDesktop",
-	"Microsoft.Print3D"
+	"Microsoft.ZuneVideo"
 	)
 )
+$Help = @"
+In case you have removed them for good, you can try to restore the files using installation medium as follows:
+
+$MountFolder = "C:\Mnt"
+New-Item $MountFolder -Type Directory | Out-Null
+dism /Mount-Image /ImageFile:D:\sources\install.wim /index:1 /ReadOnly /MountDir:"$MountFolder"
+robocopy /S /SEC /R:0 "$($MountFolder)\Program Files\WindowsApps" "C:\Program Files\WindowsApps"
+dism /Unmount-Image /Discard /MountDir:"$MountFolder"
+Remove-Item -Path $MountFolder -Recurse
+"@
 Out-put "Provisioning of $($Description) is $($Status)"
 switch ($Status){
 	"Disabled"{
@@ -2780,13 +3441,6 @@ switch ($Status){
 		}
 	}#switch
 }#Set-ProvisionedPackages
-
-# In case you have removed them for good, you can try to restore the files using installation medium as follows
-# New-Item C:\Mnt -Type Directory | Out-Null
-# dism /Mount-Image /ImageFile:D:\sources\install.wim /index:1 /ReadOnly /MountDir:C:\Mnt
-# robocopy /S /SEC /R:0 "C:\Mnt\Program Files\WindowsApps" "C:\Program Files\WindowsApps"
-# dism /Unmount-Image /Discard /MountDir:C:\Mnt
-# Remove-Item -Path C:\Mnt -Recurse
 
 # (Un)Install third party applications
 Function Set-Provisioned3PartyPackages {
@@ -2828,6 +3482,7 @@ param(
 	"CAF9E577.Plex"
 	)
 )
+$Description = "ThirdParty (Non-Microsoft) AppXPackages"
 switch ($Status){
 	"Enabled" {
 		ForEach ($AppXPackage in $AppxPackages){
@@ -2847,6 +3502,7 @@ param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status,
 [string[]]$AppXPackages = @( "Microsoft.DesktopAppInstaller","Microsoft.WindowsStore" )
 )
+$Description = "Windows Store"
 switch ($Status){
 	"Enabled" {
 		ForEach ($AppXPackage in $AppxPackages){
@@ -2916,7 +3572,6 @@ try {
 catch { Out-put "could not set $($Description) to $($Status)"}
 }#Set-XboxFeature
 
-# Disable built-in Adobe Flash in IE and Edge
 Function Set-AdobeFlash {
 param(
 [Parameter(Mandatory = $True)][ValidateSet("Enabled","Disabled")]$Status
@@ -3088,7 +3743,7 @@ switch ($Status){
 	"Disabled" { Set-ItemProperty $RegPaths[0] -Name $RegKeys[0] -Type Dword -Value $RegVal }
 	"Enabled" { Remove-ItemProperty $RegPaths[0] -Name $RegKeys[0] -ErrorAction SilentlyContinue }
 	}
-}
+}#Set-EdgeShortcutCreation
 
 Function Set-PhotoViewerAssociation {
 param(
@@ -3213,7 +3868,7 @@ switch ($Status){
 		Set-ItemProperty -Path $RegPath[0] -Name $RegKey[1] -Type DWord -Value 1
 		}
 	}
-}
+}#Set-ControlPanelView
 
 # Set Data Execution Prevention (DEP) policy to OptOut
 Function Set-DEP {
@@ -3351,15 +4006,13 @@ try {
 		}
 	}
 catch { Out-put "could not set $($Description) to $($Status)"}
-}
-
-
+}#Set-Audio
 
 }#begin
 
 end{
 switch ($RedirectOutput){
-	"Host" { Write-Host "W10 setup script has finished"}
+	"Host" { Write-Host "W10 tweaks script has finished"}
 	"Log" { Out-File $script:LogFilePath "End of script execution at $(Get-Date)" -Append -NoClobber }
 	"Pipe" { $script:Output }
 	}
