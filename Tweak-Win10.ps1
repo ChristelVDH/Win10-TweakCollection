@@ -111,15 +111,15 @@ $Tweaks = @"
 "Set-SMBv1","Status","Enabled,Disabled","OS","Valid"
 "Set-SMBServer","Status","Enabled,Disabled","OS","Valid"
 "Set-LLMNR","Status","Enabled,Disabled","OS","Valid"
-"Set-CurrentNetworkProfile","Status","Private,Public","OS","Valid"
-"Set-UnknownNetworkProfile","Status","Private,Public","OS","Valid"
+"Set-CurrentNetworkProfile","Status","Private,InPublic","OS","Valid"
+"Set-UnknownNetworkProfile","Status","Private,InPublic","OS","Valid"
 "Set-NetDevicesAutoInst","Status","Enabled,Disabled","OS","Valid"
 "Set-FolderAccessControl","Status","Enabled,Disabled","Security","Valid"
 "Set-Firewall","Status","Enabled,Disabled","Security","Valid"
 "Set-WindowsDefender","Status","Enabled,Disabled","Security","Valid"
 "Set-WindowsDefenderCloud","Status","Enabled,Disabled","Security","Valid"
 "Set-F8BootMenu","Status","Legacy,Standard","OS","Valid"
-"Set-DEPOption","Status","OptIn,OptOut","Security","Valid"
+"Set-DEPOption","Status","WindowsOnly,OptOut","Security","Valid"
 "Set-CIMemoryIntegrity","Status","Enabled,Disabled","Security","Valid"
 "Set-DotNetStrongCrypto","Status","Enabled,Disabled","Security","Valid"
 "Set-ScriptHost","Status","Enabled,Disabled","Security","Valid"
@@ -234,7 +234,6 @@ $Tweaks = @"
 "Set-SearchAppInStore","Status","Enabled,Disabled","Feature","Valid"
 "Set-NewAppPrompt","Status","Enabled,Disabled","Explorer","Valid"
 "Set-ControlPanelView","Status","Category,Large,Small","Explorer","Valid"
-"Set-DEP","Status","OptOut,OptIn","Security","Valid"
 "Set-ServerManagerOnLogin","Status","Enabled,Disabled","Server","Valid"
 "Set-ShutdownTracker","Status","Enabled,Disabled","Server","Valid"
 #set required values in function PasswordPolicy parameter set!!!,,,,"Comment"
@@ -1044,7 +1043,7 @@ Set-SingleRegKey @SingleRegKeyProps
 
 Function Set-CurrentNetworkProfile {
 param(
-[Parameter(Mandatory = $True)][ValidateSet("Private","Public")]$Status
+[Parameter(Mandatory = $True)][ValidateSet("Private","InPublic")]$Status
 )
 $Description = "Current Network profile"
 Out-put "setting $($Description) to $($Status)"
@@ -1054,7 +1053,7 @@ catch { Out-put "could not set $($Description) to $($Status)"}
 
 Function Set-UnknownNetworkProfile {
 param(
-[Parameter(Mandatory = $True)][ValidateSet("Private","Public")]$Status
+[Parameter(Mandatory = $True)][ValidateSet("Private","InPublic")]$Status
 )
 switch ($Status){
 	"Public"{ $RemoveRegKey = $True }
@@ -1203,10 +1202,14 @@ catch { Out-put "could not set $($Description) to $($Status)"}
 
 Function Set-DEPOption {
 param(
-[ValidateSet("OpIn","OptOut")]$Status
+[ValidateSet("OptIn","WindowsOnly")]$Status
 )
 $Description = "Data Execution Prevention"
-bcdedit /set `{current`} nx $Status | Out-Null
+
+switch ($Status){
+	"WindowsOnly" { bcdedit /set `{current`} nx OptOut | Out-Null }
+	"OptIn" { bcdedit /set `{current`} nx OptIn | Out-Null }
+	}
 Out-put "setting $($Description) to $($Status)"
 }#Set-DEPOption
 
@@ -3902,17 +3905,6 @@ switch ($Status){
 		}
 	}
 }#Set-ControlPanelView
-
-# Set Data Execution Prevention (DEP) policy to OptOut
-Function Set-DEP {
-param(
-[Parameter(Mandatory = $True)][ValidateSet("OptOut","OptIn")]$Status
-)
-$Description = "DEP policy"
-Out-put "setting $($Description) to $($Status)"
-try { bcdedit /set `{current`} nx $($Status) | Out-Null }
-catch { Out-put "could not set $($Description) to $($Status)"}
-}#Set-DEP
 
 ########### Server specific Tweaks ###########
 
