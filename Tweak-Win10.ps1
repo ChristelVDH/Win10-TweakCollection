@@ -46,15 +46,26 @@ process{
 # Load Tweak names from selection grid or a preset file
 switch ($PsCmdlet.ParameterSetName){
 	"Preset" { $Tweaks = Test-Tweak -Tweaks $( Import-Csv -Path $PresetFile -Delimiter $Delimiter -Header $TweakHdr ) }
-	"Select" { $Tweaks = $Tweaks | Out-GridView -Title "Select Tweaks to apply" -PassThru }
+	"Select" { 
+		$Tweaks = $Tweaks | Out-GridView -Title "Select Tweaks to apply" -PassThru 
+		ForEach ($Tweak in $Tweaks){
+			$Message = "Choose value for parameter $($Tweak.Parameter) of $($Tweak.Tweak)"
+			$Choices = @($Tweak.ParameterOption -split ",")
+			$ParameterOption = Get-TweakParameter -Message $Message -Choices $Choices
+			$Tweak.ParameterOption = $ParameterOption
+			}
+		}
 	}
 foreach ($Tweak in $Tweaks){
 	$error.clear()
 	if ( $Tweak.Validation -eq "Valid" ){
-		switch ($PsCmdlet.ParameterSetName){
-			"Preset" { Invoke-Expression "$($Tweak.Tweak) -$($Tweak.Parameter) $($Tweak.ParameterOption)" }
-			"Select" { Invoke-Expression $Tweak.Tweak }
-			}
+		$Expression = "$($Tweak.Tweak) -$($Tweak.Parameter) $($Tweak.ParameterOption)"
+		Write-Verbose "executing tweak: $($Expression)"
+		Invoke-Expression $Expression
+		# switch ($PsCmdlet.ParameterSetName){
+			# "Preset" { Invoke-Expression "$($Tweak.Tweak) -$($Tweak.Parameter) $($Tweak.ParameterOption)" }
+			# "Select" { Invoke-Expression $Tweak.Tweak }
+			# }
 		if ( $error ){ $Tweak.Applied = $False } else { $Tweak.Applied = $True }
 		}
 	else { Out-put "Failed to find $($Tweak.Tweak) in script functions" }
@@ -252,6 +263,24 @@ switch ($RedirectOutput){
 	"Pipe" { $script:Output += $InString }
 	}
 }
+
+Function Get-TweakParameter {
+param(
+[string]$Caption = 'Select desired value for tweak parameter',
+[Parameter(Mandatory = $true)][string]$Message,
+[Parameter(Mandatory = $true)][string[]]$Choices
+)
+if ($args) { throw "Unknown parameters: $args" }
+[System.Management.Automation.Host.ChoiceDescription[]]$Selections = @()
+foreach($Choice in $Choices){
+    $c = [System.Management.Automation.Host.ChoiceDescription]"`&$($Choice)"
+    $c.HelpMessage = $Choice
+    $Selections += $c
+	}
+$Selection = $Choices[$Host.UI.PromptForChoice($Caption, $Message, $Selections, -1)]
+Write-Verbose "selected value from $($Choices) is $($Selection)"
+return $Selection
+}#Get-TweakParameter
 
 Function Test-Tweak {
 param (
@@ -2028,6 +2057,7 @@ RegType = "String"
 RegVal = $RegVal
 RemoveRegKey = $RemoveRegKey
 }
+Set-SingleRegKey @SingleRegKeyProps
 }#Set-IncludeInLibrary
 
 Function Set-PinToStart {
@@ -2581,6 +2611,7 @@ param(
 [Parameter(Mandatory = $True)][ValidateSet("None","Hidden","System")]$Status
 )
 $Description = "Show hidden system files"
+Out-put "setting $($Description) to $($Status)"
 $RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
 $RegKeys = @(
 "Hidden",
@@ -3483,6 +3514,7 @@ param(
 	)
 )
 $Description = "ThirdParty (Non-Microsoft) AppXPackages"
+Out-put "setting $($Description) to $($Status)"
 switch ($Status){
 	"Enabled" {
 		ForEach ($AppXPackage in $AppxPackages){
@@ -3503,6 +3535,7 @@ param(
 [string[]]$AppXPackages = @( "Microsoft.DesktopAppInstaller","Microsoft.WindowsStore" )
 )
 $Description = "Windows Store"
+Out-put "setting $($Description) to $($Status)"
 switch ($Status){
 	"Enabled" {
 		ForEach ($AppXPackage in $AppxPackages){
